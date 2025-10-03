@@ -2,16 +2,26 @@ import { useState } from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { agencyMappings, components, states } from "@/data/agencies";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Mapping = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterComponent, setFilterComponent] = useState<string>("all");
   const [filterState, setFilterState] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+
+  const handleExport = () => {
+    toast({
+      title: "Export Started",
+      description: "Downloading agency mapping table...",
+    });
+  };
 
   const filteredMappings = agencyMappings.filter((mapping) => {
     const matchesSearch =
@@ -56,8 +66,16 @@ const Mapping = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Search & Filter</CardTitle>
-            <CardDescription>Find agencies by component, state, district, or village</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Search & Filter</CardTitle>
+                <CardDescription>Find agencies by component, state, district, or village</CardDescription>
+              </div>
+              <Button variant="outline" onClick={handleExport}>
+                <Download className="h-4 w-4 mr-2" />
+                Export Table
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="relative">

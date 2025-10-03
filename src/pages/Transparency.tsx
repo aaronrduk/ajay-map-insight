@@ -19,6 +19,8 @@ const Transparency = () => {
     name: "",
     issue: "",
   });
+  const [trackingId, setTrackingId] = useState("");
+  const [trackingResult, setTrackingResult] = useState<any>(null);
 
   const handleSearch = () => {
     const result = districtData.find(
@@ -42,10 +44,34 @@ const Transparency = () => {
 
   const handleGrievanceSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const refId = `GRV${Date.now()}`;
     setGrievanceSubmitted(true);
     toast({
       title: "Grievance Submitted",
-      description: "Your grievance has been recorded. Reference ID: GRV2025001",
+      description: `Your grievance has been recorded. Reference ID: ${refId}`,
+    });
+  };
+
+  const handleTrackGrievance = () => {
+    if (!trackingId.trim()) {
+      toast({
+        title: "Invalid Tracking ID",
+        description: "Please enter a valid tracking ID",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simulate tracking result
+    const statuses = ["Pending", "Under Review", "Resolved"];
+    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+    setTrackingResult({
+      id: trackingId,
+      status: randomStatus,
+      date: new Date().toLocaleDateString(),
+      remarks: randomStatus === "Resolved" 
+        ? "Your grievance has been resolved by the district authority." 
+        : "Your grievance is being processed.",
     });
   };
 
@@ -189,8 +215,11 @@ const Transparency = () => {
                 </p>
                 <div className="p-4 bg-muted/30 rounded-lg inline-block">
                   <p className="text-sm text-muted-foreground">Reference ID</p>
-                  <p className="text-xl font-bold text-primary">GRV2025001</p>
+                  <p className="text-xl font-bold text-primary">GRV{Date.now()}</p>
                 </div>
+                <p className="text-sm text-muted-foreground">
+                  Save this ID to track your grievance status
+                </p>
                 <Button
                   onClick={() => {
                     setGrievanceSubmitted(false);
@@ -234,6 +263,64 @@ const Transparency = () => {
                   Submit Grievance
                 </Button>
               </form>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Grievance Tracking */}
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Search className="h-5 w-5 text-primary" />
+              Track Your Grievance
+            </CardTitle>
+            <CardDescription>
+              Enter your grievance tracking ID to check status
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-3">
+              <Input
+                placeholder="Enter tracking ID (e.g., GRV2025001)"
+                value={trackingId}
+                onChange={(e) => setTrackingId(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleTrackGrievance()}
+                className="flex-1"
+              />
+              <Button onClick={handleTrackGrievance}>Track</Button>
+            </div>
+
+            {trackingResult && (
+              <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                <h3 className="font-semibold text-lg mb-3">Grievance Status</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Tracking ID:</span>
+                    <span className="font-mono font-semibold">{trackingResult.id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Status:</span>
+                    <Badge
+                      className={
+                        trackingResult.status === "Resolved"
+                          ? "bg-secondary text-secondary-foreground"
+                          : trackingResult.status === "Under Review"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-accent text-accent-foreground"
+                      }
+                    >
+                      {trackingResult.status}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Submitted:</span>
+                    <span className="font-medium">{trackingResult.date}</span>
+                  </div>
+                  <div className="mt-3 p-3 bg-muted/50 rounded">
+                    <p className="text-sm">{trackingResult.remarks}</p>
+                  </div>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>

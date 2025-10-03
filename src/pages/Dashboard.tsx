@@ -1,9 +1,20 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, PieChart, TrendingUp, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BarChart3, PieChart, TrendingUp, Users, Download } from "lucide-react";
 import { agencyMappings } from "@/data/agencies";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
+  const { toast } = useToast();
+
+  const handleExport = (format: string) => {
+    toast({
+      title: "Export Started",
+      description: `Downloading dashboard data as ${format.toUpperCase()}...`,
+    });
+  };
+
   // Calculate statistics from dummy data
   const totalProjects = agencyMappings.length;
   const approvedProjects = agencyMappings.filter((m) => m.status === "Approved").length;
@@ -30,13 +41,25 @@ const Dashboard = () => {
     <Layout>
       <div className="container mx-auto px-4 py-8 space-y-6">
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold text-foreground flex items-center gap-2">
-            <BarChart3 className="h-10 w-10 text-primary" />
-            Dashboard
-          </h1>
-          <p className="text-muted-foreground">
-            Monitor KPIs, funds allocation, and project performance
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-foreground flex items-center gap-2">
+                <BarChart3 className="h-10 w-10 text-primary" />
+                PM-AJAY Dashboard
+              </h1>
+              <p className="text-muted-foreground">Real-time insights and analytics</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => handleExport("pdf")}>
+                <Download className="h-4 w-4 mr-2" />
+                Export PDF
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleExport("excel")}>
+                <Download className="h-4 w-4 mr-2" />
+                Export Excel
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* KPI Cards */}
