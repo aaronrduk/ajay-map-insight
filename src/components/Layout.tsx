@@ -43,7 +43,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <p className="text-primary-foreground/60">Last updated</p>
                 <p className="font-medium">{lastUpdated.toLocaleTimeString()}</p>
               </div>
-              <Button variant="outline" size="sm" onClick={handleRefresh} className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/20 font-semibold shrink-0">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleRefresh} 
+                className="text-primary-foreground bg-primary-foreground/10 border-2 border-primary-foreground hover:bg-primary-foreground hover:text-primary font-bold shrink-0 shadow-md transition-all hover:scale-105"
+              >
                 <RefreshCw className="h-4 w-4 md:mr-2" />
                 <span className="hidden md:inline">Refresh</span>
               </Button>
@@ -56,7 +61,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                       {user.role}
                     </Badge>
                   </div>
-                  <Button variant="outline" size="sm" onClick={handleLogout} className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/20 font-semibold shrink-0">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleLogout} 
+                    className="text-primary-foreground bg-primary-foreground/10 border-2 border-primary-foreground hover:bg-primary-foreground hover:text-primary font-bold shrink-0 shadow-md transition-all hover:scale-105"
+                  >
                     <LogOut className="h-4 w-4" />
                     <span className="hidden sm:inline ml-2">Logout</span>
                   </Button>
@@ -64,7 +74,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               )}
               {!user && (
                 <Link to="/login">
-                  <Button variant="outline" size="sm" className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/20 font-semibold shrink-0">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-primary-foreground bg-primary-foreground/10 border-2 border-primary-foreground hover:bg-primary-foreground hover:text-primary font-bold shrink-0 shadow-md transition-all hover:scale-105"
+                  >
                     <User className="h-4 w-4 md:mr-2" />
                     <span className="hidden md:inline">Login</span>
                   </Button>
