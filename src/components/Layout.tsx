@@ -38,34 +38,35 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <h1 className="text-2xl font-bold">AJAY-MAP</h1>
               <p className="text-sm text-primary-foreground/80">Agency Mapping & Monitoring Portal</p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right text-sm">
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="hidden sm:block text-right text-xs md:text-sm">
                 <p className="text-primary-foreground/60">Last updated</p>
                 <p className="font-medium">{lastUpdated.toLocaleTimeString()}</p>
               </div>
-              <Button variant="outline" size="sm" onClick={handleRefresh} className="text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
+              <Button variant="outline" size="sm" onClick={handleRefresh} className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/20 font-semibold shrink-0">
+                <RefreshCw className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Refresh</span>
               </Button>
               {user && (
                 <div className="flex items-center gap-2">
-                  <div className="text-right">
+                  <div className="hidden lg:block text-right">
                     <p className="text-xs text-primary-foreground/60">Logged in as</p>
                     <p className="font-medium text-sm">{user.name}</p>
                     <Badge variant="secondary" className="text-xs mt-1">
                       {user.role}
                     </Badge>
                   </div>
-                  <Button variant="outline" size="sm" onClick={handleLogout} className="text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10">
+                  <Button variant="outline" size="sm" onClick={handleLogout} className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/20 font-semibold shrink-0">
                     <LogOut className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-2">Logout</span>
                   </Button>
                 </div>
               )}
               {!user && (
                 <Link to="/login">
-                  <Button variant="outline" size="sm" className="text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10">
-                    <User className="h-4 w-4 mr-2" />
-                    Login
+                  <Button variant="outline" size="sm" className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/20 font-semibold shrink-0">
+                    <User className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Login</span>
                   </Button>
                 </Link>
               )}
