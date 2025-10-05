@@ -19,13 +19,82 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Approximate coordinates for districts (latitude, longitude)
+// Real coordinates for districts across India (latitude, longitude)
 const districtCoordinates: Record<string, [number, number]> = {
+  // Kerala
   "Kollam": [8.8932, 76.6141],
+  "Thiruvananthapuram": [8.5241, 76.9366],
+  "Palakkad": [10.7867, 76.6548],
+  
+  // Tamil Nadu
   "Chennai": [13.0827, 80.2707],
+  "Madurai": [9.9252, 78.1198],
+  "Coimbatore": [11.0168, 76.9558],
+  
+  // Uttar Pradesh
   "Lucknow": [26.8467, 80.9462],
-  "Jaipur": [26.9124, 75.7873],
+  "Varanasi": [25.3176, 82.9739],
+  "Allahabad": [25.4358, 81.8463],
+  
+  // Maharashtra
   "Pune": [18.5204, 73.8567],
+  "Nagpur": [21.1458, 79.0882],
+  "Aurangabad": [19.8762, 75.3433],
+  
+  // Karnataka
+  "Bangalore Rural": [13.2846, 77.3821],
+  "Mysore": [12.2958, 76.6394],
+  "Belgaum": [15.8497, 74.4977],
+  
+  // Rajasthan
+  "Jaipur": [26.9124, 75.7873],
+  "Udaipur": [24.5854, 73.7125],
+  "Jodhpur": [26.2389, 73.0243],
+  
+  // Gujarat
+  "Ahmedabad": [23.0225, 72.5714],
+  "Surat": [21.1702, 72.8311],
+  "Vadodara": [22.3072, 73.1812],
+  
+  // West Bengal
+  "Kolkata": [22.5726, 88.3639],
+  "Howrah": [22.5958, 88.2636],
+  "Bardhaman": [23.2324, 87.8615],
+  
+  // Bihar
+  "Patna": [25.5941, 85.1376],
+  "Gaya": [24.7955, 84.9994],
+  "Muzaffarpur": [26.1225, 85.3906],
+  
+  // Madhya Pradesh
+  "Bhopal": [23.2599, 77.4126],
+  "Indore": [22.7196, 75.8577],
+  "Jabalpur": [23.1815, 79.9864],
+  
+  // Andhra Pradesh
+  "Visakhapatnam": [17.6868, 83.2185],
+  "Guntur": [16.3067, 80.4365],
+  "Vijayawada": [16.5062, 80.6480],
+  
+  // Telangana
+  "Hyderabad": [17.3850, 78.4867],
+  "Warangal": [17.9689, 79.5941],
+  "Karimnagar": [18.4386, 79.1288],
+  
+  // Punjab
+  "Ludhiana": [30.9010, 75.8573],
+  "Amritsar": [31.6340, 74.8723],
+  "Jalandhar": [31.3260, 75.5762],
+  
+  // Haryana
+  "Gurgaon": [28.4595, 77.0266],
+  "Faridabad": [28.4089, 77.3178],
+  "Panipat": [29.3909, 76.9635],
+  
+  // Odisha
+  "Bhubaneswar": [20.2961, 85.8245],
+  "Cuttack": [20.4625, 85.8828],
+  "Rourkela": [22.2604, 84.8536],
 };
 
 const MapView = () => {
