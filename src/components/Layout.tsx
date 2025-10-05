@@ -178,7 +178,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </p>
             <p>&copy; 2025 Team Insightix. Developed for demonstration purposes.</p>
             <p className="text-xs">
-              Powered by React • Tailwind CSS • Leaflet.js • OpenStreetMap • Lovable AI
+              Powered by React • Tailwind CSS • Leaflet.js • OpenStreetMap •
             </p>
           </div>
         </div>
