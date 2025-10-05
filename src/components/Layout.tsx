@@ -1,189 +1,185 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Home, Map, MapPin, FileText, BarChart3, Users, ArrowLeftRight, Target, LogOut, User, RefreshCw } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "./ui/button";
+import { RefreshCw, User, MapPin, UserCog, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AIChatbot from "./AIChatbot";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { user, logout } = useAuth();
+  const location = useLocation();
   const { toast } = useToast();
-  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [loginType, setLoginType] = useState<"citizen" | "agency" | "admin">("citizen");
 
   const handleRefresh = () => {
-    setLastUpdated(new Date());
+    setLastUpdated(new Date().toLocaleTimeString());
     toast({
       title: "Data Refreshed",
-      description: "Latest information loaded successfully",
+      description: "Latest information has been loaded",
     });
   };
 
-  const handleLogout = () => {
-    logout();
-    toast({
-      title: "Logged Out",
-      description: "You have been logged out successfully",
-    });
+  const openLoginDialog = (type: "citizen" | "agency" | "admin") => {
+    setLoginType(type);
+    setLoginDialogOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground shadow-lg">
+      <header className="bg-card/80 border-b border-border sticky top-0 z-40 backdrop-blur-md">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">AJAY-MAP</h1>
-              <p className="text-sm text-primary-foreground/80">Agency Mapping & Monitoring Portal</p>
-            </div>
-            <div className="flex items-center gap-2 md:gap-4">
-              <div className="hidden sm:block text-right text-xs md:text-sm">
-                <p className="text-primary-foreground/60">Last updated</p>
-                <p className="font-medium">{lastUpdated.toLocaleTimeString()}</p>
+            <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
+              <div className="relative">
+                <MapPin className="h-10 w-10 text-primary group-hover:scale-110 transition-transform" />
+                <div className="absolute inset-0 h-10 w-10 text-accent opacity-20 animate-ping" />
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleRefresh} 
-                className="text-primary-foreground bg-primary-foreground/10 border-2 border-primary-foreground hover:bg-primary-foreground hover:text-primary font-bold shrink-0 shadow-md transition-all hover:scale-105"
+              <div>
+                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                  AJAY-MAP
+                </h1>
+                <p className="text-xs text-muted-foreground">Agency Mapping Portal</p>
+              </div>
+            </Link>
+            
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-muted-foreground hidden md:block">
+                Updated: {lastUpdated}
+              </div>
+              
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                size="sm"
+                className="gap-2 font-semibold border-primary/30 hover:border-primary hover:bg-primary/10"
               >
-                <RefreshCw className="h-4 w-4 md:mr-2" />
+                <RefreshCw className="h-4 w-4" />
                 <span className="hidden md:inline">Refresh</span>
               </Button>
-              {user && (
-                <div className="flex items-center gap-2">
-                  <div className="hidden lg:block text-right">
-                    <p className="text-xs text-primary-foreground/60">Logged in as</p>
-                    <p className="font-medium text-sm">{user.name}</p>
-                    <Badge variant="secondary" className="text-xs mt-1">
-                      {user.role}
-                    </Badge>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handleLogout} 
-                    className="text-primary-foreground bg-primary-foreground/10 border-2 border-primary-foreground hover:bg-primary-foreground hover:text-primary font-bold shrink-0 shadow-md transition-all hover:scale-105"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span className="hidden sm:inline ml-2">Logout</span>
-                  </Button>
-                </div>
-              )}
-              {!user && (
-                <Link to="/login">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-primary-foreground bg-primary-foreground/10 border-2 border-primary-foreground hover:bg-primary-foreground hover:text-primary font-bold shrink-0 shadow-md transition-all hover:scale-105"
-                  >
-                    <User className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Login</span>
-                  </Button>
-                </Link>
-              )}
+
+              {/* Demo Login Icons */}
+              <div className="flex items-center gap-2 border-l border-border pl-3">
+                <Button
+                  onClick={() => openLoginDialog("citizen")}
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 hover:bg-primary/10"
+                  title="Citizen Login (Demo)"
+                >
+                  <User className="h-4 w-4" />
+                  <span className="hidden lg:inline text-xs">Citizen</span>
+                </Button>
+                <Button
+                  onClick={() => openLoginDialog("agency")}
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 hover:bg-accent/10"
+                  title="Agency Login (Demo)"
+                >
+                  <UserCog className="h-4 w-4" />
+                  <span className="hidden lg:inline text-xs">Agency</span>
+                </Button>
+                <Button
+                  onClick={() => openLoginDialog("admin")}
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 hover:bg-destructive/10"
+                  title="Admin Login (Demo)"
+                >
+                  <Shield className="h-4 w-4" />
+                  <span className="hidden lg:inline text-xs">Admin</span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
+      {/* Login Dialog */}
+      <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {loginType === "citizen" && <User className="h-5 w-5" />}
+              {loginType === "agency" && <UserCog className="h-5 w-5" />}
+              {loginType === "admin" && <Shield className="h-5 w-5" />}
+              {loginType.charAt(0).toUpperCase() + loginType.slice(1)} Login
+            </DialogTitle>
+            <DialogDescription>
+              This is a demonstration portal for Smart India Hackathon 2025
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="rounded-lg bg-accent/10 border border-accent/20 p-4">
+              <p className="text-sm text-foreground font-semibold mb-2">
+                🎯 Demo Access Mode
+              </p>
+              <p className="text-sm text-muted-foreground">
+                All features are accessible without authentication for demonstration purposes. 
+                No login credentials required.
+              </p>
+            </div>
+            <Button 
+              onClick={() => setLoginDialogOpen(false)} 
+              className="w-full"
+            >
+              Continue Exploring
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Navigation */}
-      <nav className="bg-card border-b shadow-sm">
+      <nav className="bg-card/80 border-b border-border backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <ul className="flex flex-wrap gap-2 py-3">
-            <li>
+          <div className="flex items-center gap-1 overflow-x-auto py-2">
+            {[
+              { path: "/", label: "Home" },
+              { path: "/mapping", label: "Mapping" },
+              { path: "/map", label: "Map View" },
+              { path: "/proposal", label: "Proposal" },
+              { path: "/dashboard", label: "Dashboard" },
+              { path: "/transparency", label: "Transparency" },
+              { path: "/comparison", label: "Comparison" },
+              { path: "/impact", label: "Impact Metrics" },
+              { path: "/about", label: "About" },
+            ].map((item) => (
               <Link
-                to="/"
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                key={item.path}
+                to={item.path}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                  location.pathname === item.path
+                    ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-md"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
               >
-                <Home className="h-4 w-4" />
-                Home
+                {item.label}
               </Link>
-            </li>
-            <li>
-              <Link
-                to="/mapping"
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <Map className="h-4 w-4" />
-                Mapping
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/map"
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <MapPin className="h-4 w-4" />
-                Map View
-              </Link>
-            </li>
-            {(!user || user.role !== "citizen") && (
-              <li>
-                <Link
-                  to="/proposal"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-                >
-                  <FileText className="h-4 w-4" />
-                  Proposal
-                </Link>
-              </li>
-            )}
-            <li>
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <BarChart3 className="h-4 w-4" />
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/transparency"
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <Users className="h-4 w-4" />
-                Transparency
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/comparison"
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <ArrowLeftRight className="h-4 w-4" />
-                Comparison
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/impact"
-                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <Target className="h-4 w-4" />
-                Impact
-              </Link>
-            </li>
-          </ul>
+            ))}
+          </div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
 
       {/* AI Chatbot */}
       <AIChatbot />
 
       {/* Footer */}
-      <footer className="bg-card border-t mt-12">
+      <footer className="bg-card/80 border-t border-border mt-auto backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground mb-2">Towards Inclusive Development</p>
-            <p>© 2025 PM-AJAY | Ministry of Social Justice & Empowerment</p>
-            <p className="mt-1">Transparency for Every Citizen</p>
+          <div className="text-center text-sm text-muted-foreground space-y-2">
+            <p className="font-semibold text-foreground">
+              AJAY-MAP Portal | Smart India Hackathon 2025
+            </p>
+            <p>&copy; 2025 Team Insightix. Developed for demonstration purposes.</p>
+            <p className="text-xs">
+              Powered by React • Tailwind CSS • Leaflet.js • OpenStreetMap • Lovable AI
+            </p>
           </div>
         </div>
       </footer>
