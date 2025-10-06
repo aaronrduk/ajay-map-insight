@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Users, FileText, CheckCircle } from "lucide-react";
 import { agencyMappings, districtData } from "@/data/agencies";
+import { getAllDistricts } from "@/data/india-geography";
 import { useToast } from "@/hooks/use-toast";
 
 const Transparency = () => {
@@ -101,13 +103,18 @@ const Transparency = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-3">
-              <Input
-                placeholder="Enter district name (e.g., Kollam, Chennai, Lucknow)"
-                value={searchDistrict}
-                onChange={(e) => setSearchDistrict(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                className="flex-1"
-              />
+              <Select value={searchDistrict} onValueChange={setSearchDistrict}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Select district to search..." />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {getAllDistricts().map((district) => (
+                    <SelectItem key={district} value={district}>
+                      {district}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Button onClick={handleSearch}>Search</Button>
             </div>
 

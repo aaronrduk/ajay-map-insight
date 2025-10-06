@@ -6,10 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { components, states, agencyMappings } from "@/data/agencies";
+import { components, agencyMappings } from "@/data/agencies";
+import { getAllStates, getDistrictsByState } from "@/data/india-geography";
 import { Badge } from "@/components/ui/badge";
 import { FileText, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const states = getAllStates();
 
 const Proposal = () => {
   const { toast } = useToast();
@@ -30,11 +33,12 @@ const Proposal = () => {
   };
 
   const handleStateChange = (value: string) => {
-    setFormData({ ...formData, state: value });
+    setFormData({ ...formData, state: value, district: "", village: "" });
+    setAutoFilledAgencies([]);
   };
 
   const handleDistrictChange = (value: string) => {
-    setFormData({ ...formData, district: value });
+    setFormData({ ...formData, district: value, village: "" });
     
     // Auto-fill agencies based on district
     const matchingMapping = agencyMappings.find(
@@ -44,6 +48,9 @@ const Proposal = () => {
       setAutoFilledAgencies(matchingMapping.agencies);
     }
   };
+
+  // Get districts for selected state
+  const availableDistricts = formData.state ? getDistrictsByState(formData.state) : [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,13 +180,19 @@ const Proposal = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="district">District</Label>
-                    <Input
-                      id="district"
-                      placeholder="Enter district name"
-                      value={formData.district}
-                      onChange={(e) => handleDistrictChange(e.target.value)}
-                    />
+                    <Label htmlFor="district">Select District</Label>
+                    <Select value={formData.district} onValueChange={handleDistrictChange}>
+                      <SelectTrigger id="district">
+                        <SelectValue placeholder="Choose a district" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        {availableDistricts.map((district) => (
+                          <SelectItem key={district} value={district}>
+                            {district}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">

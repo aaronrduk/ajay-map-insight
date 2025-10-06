@@ -4,11 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { agencyMappings, components, states } from "@/data/agencies";
+import { agencyMappings, components } from "@/data/agencies";
+import { getAllStates } from "@/data/india-geography";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Download, FileDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV, exportToPDF, getLastUpdatedTimestamp } from "@/lib/export-utils";
+
+const allStates = getAllStates();
 
 const Mapping = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -142,9 +145,9 @@ const Mapping = () => {
                 <SelectTrigger>
                   <SelectValue placeholder="All States" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">All States</SelectItem>
-                  {states.map((state) => (
+                  {allStates.map((state) => (
                     <SelectItem key={state} value={state}>
                       {state}
                     </SelectItem>
