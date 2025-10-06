@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { districtData, DistrictData } from "@/data/agencies";
-import { MapPin, Users, Building2, TrendingUp } from "lucide-react";
+import { MapPin, Users, Building2, TrendingUp, Info } from "lucide-react";
+import { getLastUpdatedTimestamp } from "@/lib/export-utils";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -101,6 +102,7 @@ const MapView = () => {
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictData | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const lastUpdated = useMemo(() => getLastUpdatedTimestamp(), []);
 
   const formatCurrency = (amount: number) => {
     return `₹${(amount / 10000000).toFixed(2)} Cr`;
@@ -187,6 +189,7 @@ const MapView = () => {
           <p className="text-muted-foreground">
             Real-time PM-AJAY projects mapped across India using OpenStreetMap
           </p>
+          <p className="text-xs text-muted-foreground">Last updated: {lastUpdated}</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">

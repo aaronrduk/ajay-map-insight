@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
-import { RefreshCw, User, MapPin, UserCog, Shield } from "lucide-react";
+import { RefreshCw, User, MapPin, UserCog, Shield, Moon, Sun } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "next-themes";
 import AIChatbot from "./AIChatbot";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [loginType, setLoginType] = useState<"citizen" | "agency" | "admin">("citizen");
@@ -58,6 +60,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               >
                 <RefreshCw className="h-4 w-4" />
                 <span className="hidden md:inline">Refresh</span>
+              </Button>
+
+              <Button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                title="Toggle theme"
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
 
               {/* Demo Login Icons */}

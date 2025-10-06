@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,22 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { agencyMappings, components, states } from "@/data/agencies";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download } from "lucide-react";
+import { Search, Download, FileDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { exportToCSV, exportToPDF, getLastUpdatedTimestamp } from "@/lib/export-utils";
 
 const Mapping = () => {
-  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterComponent, setFilterComponent] = useState<string>("all");
   const [filterState, setFilterState] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
-
-  const handleExport = () => {
-    toast({
-      title: "Export Started",
-      description: "Downloading agency mapping table...",
-    });
-  };
+  const { toast } = useToast();
+  const lastUpdated = useMemo(() => getLastUpdatedTimestamp(), []);
 
   const filteredMappings = agencyMappings.filter((mapping) => {
     const matchesSearch =
@@ -54,28 +49,69 @@ const Mapping = () => {
     }
   };
 
+  const handleExportCSV = () => {
+    const exportData = filteredMappings.map(mapping => ({
+      Component: mapping.component,
+      State: mapping.state,
+      District: mapping.district,
+      Village: mapping.village,
+      'Implementing Agencies': mapping.agencies.join(', '),
+      Status: mapping.status,
+      'Funds Allocated': formatCurrency(mapping.fundsAllocated),
+      'Funds Utilized': formatCurrency(mapping.fundsUtilized),
+    }));
+    exportToCSV(exportData, 'pm-ajay-agency-mapping');
+    toast({
+      title: "Export Successful",
+      description: "Data exported to CSV file",
+    });
+  };
+
+  const handleExportPDF = () => {
+    const exportData = filteredMappings.map(mapping => ({
+      Component: mapping.component,
+      State: mapping.state,
+      District: mapping.district,
+      Village: mapping.village,
+      Agencies: mapping.agencies.join(', '),
+      Status: mapping.status,
+      Allocated: formatCurrency(mapping.fundsAllocated),
+      Utilized: formatCurrency(mapping.fundsUtilized),
+    }));
+    exportToPDF(exportData, 'pm-ajay-agency-mapping', 'PM-AJAY Agency Mapping Report');
+    toast({
+      title: "Export Successful",
+      description: "Report exported to PDF file",
+    });
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold text-foreground">Agency-Component Mapping</h1>
-          <p className="text-muted-foreground">
-            Detailed view of implementing agencies across PM-AJAY components
-          </p>
+        <div className="flex justify-between items-start">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold text-foreground">Agency-Component Mapping</h1>
+            <p className="text-muted-foreground">
+              Detailed view of implementing agencies across PM-AJAY components
+            </p>
+            <p className="text-xs text-muted-foreground">Last updated: {lastUpdated}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={handleExportCSV} variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button onClick={handleExportPDF} variant="outline" size="sm">
+              <FileDown className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
+          </div>
         </div>
 
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Search & Filter</CardTitle>
-                <CardDescription>Find agencies by component, state, district, or village</CardDescription>
-              </div>
-              <Button variant="outline" onClick={handleExport}>
-                <Download className="h-4 w-4 mr-2" />
-                Export Table
-              </Button>
-            </div>
+            <CardTitle>Search & Filter</CardTitle>
+            <CardDescription>Find agencies by component, state, district, or village</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="relative">
