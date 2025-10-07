@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { districtData, DistrictData } from "@/data/agencies";
+import { getAllStates, getDistrictsByState } from "@/data/india-geography";
 import { MapPin, Users, Building2, TrendingUp, Info } from "lucide-react";
 import { getLastUpdatedTimestamp } from "@/lib/export-utils";
 import L from "leaflet";
@@ -100,16 +102,46 @@ const districtCoordinates: Record<string, [number, number]> = {
 
 const MapView = () => {
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictData | null>(null);
+  const [filterState, setFilterState] = useState<string>("all");
+  const [filterDistrict, setFilterDistrict] = useState<string>("all");
+  const [filterComponent, setFilterComponent] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const lastUpdated = useMemo(() => getLastUpdatedTimestamp(), []);
+
+  const components = ["Adarsh Gram", "Hostel Development", "NGO Support", "Skill Development", "Infrastructure"];
+  const statuses = ["Approved", "Ongoing", "Completed", "Pending"];
+
+  // Filter district data based on selected filters
+  const filteredData = useMemo(() => {
+    return districtData.filter((district) => {
+      const matchesState = filterState === "all" || district.state === filterState;
+      const matchesDistrict = filterDistrict === "all" || district.district === filterDistrict;
+      // Since we don't have component and status in districtData, we'll just use state/district for now
+      return matchesState && matchesDistrict;
+    });
+  }, [filterState, filterDistrict, filterComponent, filterStatus]);
+
+  // Reset district filter when state changes
+  useEffect(() => {
+    if (filterState === "all") {
+      setFilterDistrict("all");
+    }
+  }, [filterState]);
 
   const formatCurrency = (amount: number) => {
     return `₹${(amount / 10000000).toFixed(2)} Cr`;
   };
 
   useEffect(() => {
-    if (!mapContainerRef.current || mapRef.current) return;
+    if (!mapContainerRef.current) return;
+
+    // Clear existing map if it exists
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
+    }
 
     // Initialize map centered on India
     const map = L.map(mapContainerRef.current).setView([20.5937, 78.9629], 5);
@@ -139,8 +171,8 @@ const MapView = () => {
       shadowSize: [33, 33],
     });
 
-    // Add markers for each district with real data
-    districtData.forEach((district) => {
+    // Add markers for filtered districts
+    filteredData.forEach((district) => {
       const coords = districtCoordinates[district.district];
       if (!coords) return;
 
@@ -176,10 +208,12 @@ const MapView = () => {
     mapRef.current = map;
 
     return () => {
-      map.remove();
-      mapRef.current = null;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     };
-  }, []);
+  }, [filteredData]);
 
   return (
     <Layout>
@@ -187,10 +221,123 @@ const MapView = () => {
         <div className="space-y-2">
           <h1 className="text-4xl font-bold text-foreground">Interactive Map View</h1>
           <p className="text-muted-foreground">
-            Real-time PM-AJAY projects mapped across India using OpenStreetMap
+            Explore PM-AJAY projects with OpenStreetMap across 100+ districts
           </p>
           <p className="text-xs text-muted-foreground">Last updated: {lastUpdated}</p>
         </div>
+
+        {/* Filter Section */}
+        <Card className="bg-card/95 backdrop-blur-sm">
+          <CardContent className="pt-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* State Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">State</label>
+                <Select value={filterState} onValueChange={setFilterState}>
+                  <SelectTrigger className="w-full bg-background/80 backdrop-blur-sm border-border z-50">
+                    <SelectValue placeholder="All States" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover/95 backdrop-blur-md border-border z-[100]">
+                    <SelectItem value="all">All States</SelectItem>
+                    {getAllStates().map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* District Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">District</label>
+                <Select 
+                  value={filterDistrict} 
+                  onValueChange={setFilterDistrict}
+                  disabled={filterState === "all"}
+                >
+                  <SelectTrigger className="w-full bg-background/80 backdrop-blur-sm border-border z-50">
+                    <SelectValue placeholder="All Districts" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover/95 backdrop-blur-md border-border z-[100]">
+                    <SelectItem value="all">All Districts</SelectItem>
+                    {filterState !== "all" &&
+                      getDistrictsByState(filterState).map((district) => (
+                        <SelectItem key={district} value={district}>
+                          {district}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Component Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Component</label>
+                <Select value={filterComponent} onValueChange={setFilterComponent}>
+                  <SelectTrigger className="w-full bg-background/80 backdrop-blur-sm border-border z-50">
+                    <SelectValue placeholder="All Components" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover/95 backdrop-blur-md border-border z-[100]">
+                    <SelectItem value="all">All Components</SelectItem>
+                    {components.map((component) => (
+                      <SelectItem key={component} value={component}>
+                        {component}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Status Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Status</label>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="w-full bg-background/80 backdrop-blur-sm border-border z-50">
+                    <SelectValue placeholder="All Status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover/95 backdrop-blur-md border-border z-[100]">
+                    <SelectItem value="all">All Status</SelectItem>
+                    {statuses.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Active Filters Display */}
+            {(filterState !== "all" || filterDistrict !== "all" || filterComponent !== "all" || filterStatus !== "all") && (
+              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
+                <span className="text-sm text-muted-foreground">Active Filters:</span>
+                <div className="flex flex-wrap gap-2">
+                  {filterState !== "all" && (
+                    <Badge variant="secondary" className="gap-1">
+                      State: {filterState}
+                    </Badge>
+                  )}
+                  {filterDistrict !== "all" && (
+                    <Badge variant="secondary" className="gap-1">
+                      District: {filterDistrict}
+                    </Badge>
+                  )}
+                  {filterComponent !== "all" && (
+                    <Badge variant="secondary" className="gap-1">
+                      Component: {filterComponent}
+                    </Badge>
+                  )}
+                  {filterStatus !== "all" && (
+                    <Badge variant="secondary" className="gap-1">
+                      Status: {filterStatus}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         <div className="grid lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2">
