@@ -27,7 +27,7 @@ const Index = () => {
               </div>
             </div>
             <h1 className="text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary">
-              AJAY-MAP
+              PM AJAY MAPPING
             </h1>
             <p className="text-3xl font-semibold text-accent">
               Agency Mapping & Monitoring Portal

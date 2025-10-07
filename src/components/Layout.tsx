@@ -41,7 +41,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-                  AJAY-MAP
+                  PM AJAY MAPPING
                 </h1>
                 <p className="text-xs text-muted-foreground">Agency Mapping Portal</p>
               </div>
@@ -147,7 +147,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       {/* Navigation */}
       <nav className="bg-card/80 border-b border-border backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-1 overflow-x-auto py-2">
+          <div className="flex items-center justify-center gap-1 overflow-x-auto py-2">
             {[
               { path: "/", label: "Home" },
               { path: "/mapping", label: "Mapping" },
@@ -157,6 +157,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               { path: "/transparency", label: "Transparency" },
               { path: "/comparison", label: "Comparison" },
               { path: "/impact", label: "Impact Metrics" },
+              { path: "/file-complaint", label: "File Complaint" },
               { path: "/about", label: "About" },
             ].map((item) => (
               <Link
@@ -186,7 +187,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="container mx-auto px-4 py-6">
           <div className="text-center text-sm text-muted-foreground space-y-2">
             <p className="font-semibold text-foreground">
-              AJAY-MAP Portal | Smart India Hackathon 2025
+              PM AJAY MAPPING Portal | Smart India Hackathon 2025
             </p>
             <p>&copy; 2025 Team Insightix. Developed for demonstration purposes.</p>
             <p className="text-xs">

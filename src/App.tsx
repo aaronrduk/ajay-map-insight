@@ -14,6 +14,7 @@ import Transparency from "./pages/Transparency";
 import Comparison from "./pages/Comparison";
 import ImpactMetrics from "./pages/ImpactMetrics";
 import About from "./pages/About";
+import FileComplaint from "./pages/FileComplaint";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/transparency" element={<Transparency />} />
             <Route path="/comparison" element={<Comparison />} />
             <Route path="/impact" element={<ImpactMetrics />} />
+            <Route path="/file-complaint" element={<FileComplaint />} />
             <Route path="/about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
