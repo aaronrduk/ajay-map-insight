@@ -47,6 +47,8 @@ const Mapping = () => {
         return "bg-primary text-primary-foreground";
       case "Approved":
         return "bg-accent text-accent-foreground";
+      case "Delayed":
+        return "bg-destructive text-destructive-foreground";
       default:
         return "bg-muted text-muted-foreground";
     }
@@ -164,6 +166,8 @@ const Mapping = () => {
                   <SelectItem value="Approved">Approved</SelectItem>
                   <SelectItem value="Ongoing">Ongoing</SelectItem>
                   <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Delayed">Delayed</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
                 </SelectContent>
               </Select>
             </div>

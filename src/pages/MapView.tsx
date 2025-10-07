@@ -111,7 +111,7 @@ const MapView = () => {
   const lastUpdated = useMemo(() => getLastUpdatedTimestamp(), []);
 
   const components = ["Adarsh Gram", "Hostel Development", "NGO Support", "Skill Development", "Infrastructure"];
-  const statuses = ["Approved", "Ongoing", "Completed", "Pending"];
+  const statuses = ["Approved", "Ongoing", "Completed", "Delayed", "Pending"];
 
   // Filter district data based on selected filters
   const filteredData = useMemo(() => {
