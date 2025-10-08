@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Bot, X, Send, Loader2, Sparkles } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
@@ -96,7 +96,7 @@ const AIChatbot = () => {
             size="icon"
           >
             <div className="relative">
-              <Bot className="h-7 w-7" />
+              <MessageCircle className="h-7 w-7" />
               <Sparkles className="h-3 w-3 absolute -top-1 -right-1 animate-pulse text-yellow-300" />
             </div>
           </Button>
@@ -111,7 +111,7 @@ const AIChatbot = () => {
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9 border-2 border-primary-foreground/30">
                 <AvatarFallback className="bg-primary-foreground/10 text-primary-foreground">
-                  <Bot className="h-5 w-5 animate-pulse" />
+                  <MessageCircle className="h-5 w-5 animate-pulse" />
                 </AvatarFallback>
               </Avatar>
               <div>
@@ -142,7 +142,7 @@ const AIChatbot = () => {
                 {msg.isBot && (
                   <Avatar className="h-8 w-8 shrink-0 border-2 border-primary/20">
                     <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-                      <Bot className="h-4 w-4" />
+                      <MessageCircle className="h-4 w-4" />
                     </AvatarFallback>
                   </Avatar>
                 )}
@@ -161,7 +161,7 @@ const AIChatbot = () => {
               <div className="flex gap-2 justify-start">
                 <Avatar className="h-8 w-8 shrink-0 border-2 border-primary/20">
                   <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-                    <Bot className="h-4 w-4" />
+                    <MessageCircle className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="bg-muted text-foreground rounded-2xl rounded-tl-none px-4 py-2.5 flex items-center gap-2 shadow-sm">
