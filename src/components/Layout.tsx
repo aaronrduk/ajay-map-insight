@@ -150,15 +150,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="flex items-center justify-center gap-1 overflow-x-auto py-2">
             {[
               { path: "/", label: "Home" },
-              { path: "/mapping", label: "Mapping" },
-              { path: "/map", label: "Map View" },
-              { path: "/proposal", label: "Proposal" },
-              { path: "/dashboard", label: "Dashboard" },
-              { path: "/transparency", label: "Transparency" },
-              { path: "/comparison", label: "Comparison" },
-              { path: "/impact", label: "Impact Metrics" },
-              { path: "/file-complaint", label: "File Complaint" },
               { path: "/about", label: "About" },
+              { path: "/funds", label: "Funds" },
+              { path: "/schemes", label: "Schemes" },
+              { path: "/courses", label: "Courses" },
+              { path: "/eligibility", label: "Eligibility" },
+              { path: "/agency-analysis", label: "Agencies" },
+              { path: "/proposal", label: "Proposal" },
+              { path: "/file-complaint", label: "Grievance" },
+              { path: "/transparency", label: "Transparency" },
+              { path: "/admin", label: "Admin" },
             ].map((item) => (
               <Link
                 key={item.path}

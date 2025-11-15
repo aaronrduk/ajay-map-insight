@@ -15,6 +15,12 @@ import Comparison from "./pages/Comparison";
 import ImpactMetrics from "./pages/ImpactMetrics";
 import About from "./pages/About";
 import FileComplaint from "./pages/FileComplaint";
+import FundAllocation from "./pages/FundAllocation";
+import SchemeDetails from "./pages/SchemeDetails";
+import CourseSelection from "./pages/CourseSelection";
+import GrantEligibility from "./pages/GrantEligibility";
+import AgencyAnalysis from "./pages/AgencyAnalysis";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +44,12 @@ const App = () => (
             <Route path="/impact" element={<ImpactMetrics />} />
             <Route path="/file-complaint" element={<FileComplaint />} />
             <Route path="/about" element={<About />} />
+            <Route path="/funds" element={<FundAllocation />} />
+            <Route path="/schemes" element={<SchemeDetails />} />
+            <Route path="/courses" element={<CourseSelection />} />
+            <Route path="/eligibility" element={<GrantEligibility />} />
+            <Route path="/agency-analysis" element={<AgencyAnalysis />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
