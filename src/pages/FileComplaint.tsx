@@ -7,8 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { AlertCircle, FileText, Upload } from "lucide-react";
+import { AlertCircle, FileText, Upload, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { getAllStates, getDistrictsByState } from "@/data/india-geography";
+import { useSubmitGrievance, useUserGrievances } from "@/hooks/use-api";
+import { Badge } from "@/components/ui/badge";
+import { components } from "@/data/agencies";
 
 const FileComplaint = () => {
   const { toast } = useToast();
@@ -19,13 +22,18 @@ const FileComplaint = () => {
     phone: "",
     state: "",
     district: "",
-    complaintType: "",
+    agency: "",
+    component: "",
+    grievanceType: "",
     description: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const submitGrievance = useSubmitGrievance();
+  const { data: userGrievances } = useUserGrievances(formData.email);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email || !formData.state || !formData.district || !formData.description) {
       toast({
         title: "Incomplete Form",
@@ -35,27 +43,80 @@ const FileComplaint = () => {
       return;
     }
 
-    toast({
-      title: "Complaint Submitted",
-      description: "Your complaint has been registered successfully. Reference ID: #" + Math.random().toString(36).substr(2, 9).toUpperCase(),
-    });
+    try {
+      const result = await submitGrievance.mutateAsync({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        state: formData.state,
+        district: formData.district,
+        agency: formData.agency,
+        component: formData.component,
+        grievance_type: formData.grievanceType,
+        description: formData.description,
+        status: "pending",
+        priority: "medium",
+      });
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      state: "",
-      district: "",
-      complaintType: "",
+      toast({
+        title: "Grievance Submitted",
+        description: `Your grievance has been registered. Reference ID: ${result.reference_id}`,
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        state: "",
+        district: "",
+        agency: "",
+        component: "",
+        grievanceType: "",
       description: "",
-    });
-    setSelectedState("");
+      });
+      setSelectedState("");
+    } catch (error) {
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your grievance",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleStateChange = (value: string) => {
     setSelectedState(value);
     setFormData({ ...formData, state: value, district: "" });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-500/10 text-yellow-700 border-yellow-500/20";
+      case "assigned":
+        return "bg-blue-500/10 text-blue-700 border-blue-500/20";
+      case "resolved":
+        return "bg-green-500/10 text-green-700 border-green-500/20";
+      case "closed":
+        return "bg-gray-500/10 text-gray-700 border-gray-500/20";
+      default:
+        return "bg-muted";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Clock className="h-4 w-4" />;
+      case "assigned":
+        return <AlertCircle className="h-4 w-4" />;
+      case "resolved":
+        return <CheckCircle2 className="h-4 w-4" />;
+      case "closed":
+        return <XCircle className="h-4 w-4" />;
+      default:
+        return <Clock className="h-4 w-4" />;
+    }
   };
 
   return (
@@ -172,17 +233,49 @@ const FileComplaint = () => {
 
                 {/* Complaint Details */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Complaint Details</h3>
-                  
+                  <h3 className="text-lg font-semibold">Grievance Details</h3>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="agency">Agency</Label>
+                      <Input
+                        id="agency"
+                        value={formData.agency}
+                        onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
+                        placeholder="Enter agency name"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="component">Scheme Component *</Label>
+                      <Select
+                        value={formData.component}
+                        onValueChange={(value) => setFormData({ ...formData, component: value })}
+                        required
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select component" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {components.map((comp) => (
+                            <SelectItem key={comp} value={comp}>
+                              {comp}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="complaintType">Complaint Type *</Label>
+                    <Label htmlFor="grievanceType">Grievance Type *</Label>
                     <Select
-                      value={formData.complaintType}
-                      onValueChange={(value) => setFormData({ ...formData, complaintType: value })}
+                      value={formData.grievanceType}
+                      onValueChange={(value) => setFormData({ ...formData, grievanceType: value })}
                       required
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select complaint type" />
+                        <SelectValue placeholder="Select grievance type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="fund-delay">Fund Disbursement Delay</SelectItem>
@@ -236,7 +329,9 @@ const FileComplaint = () => {
                         phone: "",
                         state: "",
                         district: "",
-                        complaintType: "",
+                        agency: "",
+                        component: "",
+                        grievanceType: "",
                         description: "",
                       });
                       setSelectedState("");
@@ -254,12 +349,60 @@ const FileComplaint = () => {
               <CardTitle>Important Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>• Your complaint will be assigned a unique reference ID for tracking</p>
+              <p>• Your grievance will be assigned a unique reference ID for tracking</p>
               <p>• You will receive updates on your registered email address</p>
-              <p>• False complaints may lead to legal action</p>
+              <p>• False grievances may lead to legal action</p>
               <p>• For urgent matters, please contact the helpline: 1800-XXX-XXXX</p>
             </CardContent>
           </Card>
+
+          {/* Grievance History */}
+          {formData.email && userGrievances && userGrievances.length > 0 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Your Previous Grievances</CardTitle>
+                <CardDescription>Track the status of your submitted grievances</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {userGrievances.map((grievance) => (
+                    <Card key={grievance.id} className="border">
+                      <CardContent className="pt-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold">{grievance.reference_id}</h4>
+                              <Badge
+                                variant="outline"
+                                className={`flex items-center gap-1 ${getStatusColor(grievance.status)}`}
+                              >
+                                {getStatusIcon(grievance.status)}
+                                {grievance.status.charAt(0).toUpperCase() + grievance.status.slice(1)}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {grievance.description}
+                            </p>
+                            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                              <span>• {grievance.grievance_type}</span>
+                              <span>• {grievance.component}</span>
+                              <span>• {grievance.state}, {grievance.district}</span>
+                              <span>• Filed: {new Date(grievance.created_at).toLocaleDateString()}</span>
+                            </div>
+                            {grievance.resolution_notes && (
+                              <p className="text-xs text-green-600 mt-2">
+                                <strong>Resolution:</strong> {grievance.resolution_notes}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </Layout>
