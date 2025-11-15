@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,46 +7,26 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { AlertCircle, FileText, Upload, Clock, CheckCircle, XCircle } from "lucide-react";
+import { AlertCircle, FileText, Upload } from "lucide-react";
 import { getAllStates, getDistrictsByState } from "@/data/india-geography";
-import { submitGrievance, fetchUserGrievances, Grievance } from "@/lib/api";
-import { Badge } from "@/components/ui/badge";
 
 const FileComplaint = () => {
   const { toast } = useToast();
   const [selectedState, setSelectedState] = useState("");
-  const [previousGrievances, setPreviousGrievances] = useState<Grievance[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     state: "",
     district: "",
-    agency: "",
-    component: "",
     complaintType: "",
     description: "",
   });
 
-  useEffect(() => {
-    if (formData.email) {
-      loadPreviousGrievances();
-    }
-  }, [formData.email]);
-
-  const loadPreviousGrievances = async () => {
-    try {
-      const grievances = await fetchUserGrievances(formData.email);
-      setPreviousGrievances(grievances);
-    } catch (error) {
-      console.error("Failed to load grievances:", error);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.state || !formData.district || !formData.agency || !formData.component || !formData.description) {
+    if (!formData.name || !formData.email || !formData.state || !formData.district || !formData.description) {
       toast({
         title: "Incomplete Form",
         description: "Please fill in all required fields",
@@ -55,42 +35,22 @@ const FileComplaint = () => {
       return;
     }
 
-    try {
-      const result = await submitGrievance({
-        name: formData.name,
-        contact: formData.email,
-        state: formData.state,
-        agency: formData.agency,
-        component: formData.component,
-        description: formData.description,
-      });
+    toast({
+      title: "Complaint Submitted",
+      description: "Your complaint has been registered successfully. Reference ID: #" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+    });
 
-      toast({
-        title: "Grievance Submitted",
-        description: `Your grievance has been registered successfully. Reference ID: ${result.id}`,
-      });
-
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        state: "",
-        district: "",
-        agency: "",
-        component: "",
-        complaintType: "",
-        description: "",
-      });
-      setSelectedState("");
-      loadPreviousGrievances();
-    } catch (error) {
-      toast({
-        title: "Submission Failed",
-        description: "Please try again later",
-        variant: "destructive",
-      });
-    }
+    // Reset form
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      state: "",
+      district: "",
+      complaintType: "",
+      description: "",
+    });
+    setSelectedState("");
   };
 
   const handleStateChange = (value: string) => {
@@ -275,11 +235,9 @@ const FileComplaint = () => {
                         email: "",
                         phone: "",
                         state: "",
-                    district: "",
-                    agency: "",
-                    component: "",
-                    complaintType: "",
-                    description: "",
+                        district: "",
+                        complaintType: "",
+                        description: "",
                       });
                       setSelectedState("");
                     }}

@@ -1,322 +1,212 @@
-import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  fetchAllProposals,
-  fetchAllGrievances,
-  updateProposalStatus,
-  updateGrievanceStatus,
-  Proposal,
-  Grievance,
-} from "@/lib/api";
-import { CheckCircle, XCircle, Clock, FileText, AlertCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Home, LayoutDashboard, Building2, Users, Eye, FileText, GitCompare, Settings } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
-  const { toast } = useToast();
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [grievances, setGrievances] = useState<Grievance[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const [proposalsData, grievancesData] = await Promise.all([
-        fetchAllProposals(),
-        fetchAllGrievances(),
-      ]);
-      setProposals(proposalsData);
-      setGrievances(grievancesData);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load data",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleProposalAction = async (id: string, status: 'approved' | 'rejected') => {
-    try {
-      await updateProposalStatus(id, status);
-      toast({
-        title: "Success",
-        description: `Proposal ${status} successfully`,
-      });
-      loadData();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: `Failed to ${status} proposal`,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleGrievanceAction = async (id: string, status: 'in-progress' | 'resolved') => {
-    try {
-      await updateGrievanceStatus(id, status);
-      toast({
-        title: "Success",
-        description: `Grievance marked as ${status}`,
-      });
-      loadData();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update grievance",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, { variant: any; icon: any }> = {
-      pending: { variant: "outline", icon: Clock },
-      "in-progress": { variant: "secondary", icon: AlertCircle },
-      approved: { variant: "default", icon: CheckCircle },
-      rejected: { variant: "destructive", icon: XCircle },
-      resolved: { variant: "default", icon: CheckCircle },
-    };
-    const config = variants[status] || variants.pending;
-    const Icon = config.icon;
-    return (
-      <Badge variant={config.variant} className="gap-1">
-        <Icon className="h-3 w-3" />
-        {status}
-      </Badge>
-    );
-  };
-
-  const stats = {
-    totalProposals: proposals.length,
-    pendingProposals: proposals.filter(p => p.status === 'pending').length,
-    totalGrievances: grievances.length,
-    pendingGrievances: grievances.filter(g => g.status === 'pending').length,
-  };
+  const menuItems = [
+    { icon: Home, label: "Home", path: "/admin-dashboard", color: "text-primary" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", color: "text-blue-500" },
+    { icon: Building2, label: "Manage Agencies", path: "/mapping", color: "text-green-500" },
+    { icon: Users, label: "Manage Citizens", path: "/transparency", color: "text-purple-500" },
+    { icon: Eye, label: "Transparency Control", path: "/transparency", color: "text-orange-500" },
+    { icon: FileText, label: "Reports", path: "/impact", color: "text-pink-500" },
+    { icon: GitCompare, label: "Comparison", path: "/comparison", color: "text-yellow-500" },
+    { icon: Settings, label: "System Settings", path: "/about", color: "text-gray-500" },
+  ];
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            Admin Dashboard
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Manage proposals, grievances, and portal operations
-          </p>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Complete system oversight, approvals, and analytics</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-4 gap-6">
-          <Card className="border-primary/20">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1">Total Proposals</p>
-                <p className="text-3xl font-bold text-primary">{stats.totalProposals}</p>
+        {/* Quick Access Menu */}
+        <div className="grid md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
+          {menuItems.map((item) => (
+            <Link key={item.path} to={item.path}>
+              <Card className="hover:shadow-lg transition-all cursor-pointer group border-2 hover:border-accent/50">
+                <CardContent className="pt-6 pb-4 text-center">
+                  <item.icon className={`h-8 w-8 mx-auto mb-2 ${item.color} group-hover:scale-110 transition-transform`} />
+                  <p className="text-xs font-semibold text-foreground">{item.label}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        {/* Portal-Wide Analytics */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Total Projects
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-foreground mb-1">156</p>
+              <p className="text-sm text-muted-foreground">Across all agencies</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-green-500" />
+                Active Agencies
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-foreground mb-1">28</p>
+              <p className="text-sm text-muted-foreground">Managing 250+ villages</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Users className="h-5 w-5 text-blue-500" />
+                Registered Citizens
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-foreground mb-1">5,240</p>
+              <p className="text-sm text-muted-foreground">+120 this month</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Eye className="h-5 w-5 text-orange-500" />
+                Avg Transparency
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-foreground mb-1">94%</p>
+              <p className="text-sm text-muted-foreground">Excellent score</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Proposal Approvals & Activity Logs */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Pending Approvals
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                  <div>
+                    <p className="font-semibold text-foreground">Proposal #2025-045</p>
+                    <p className="text-sm text-muted-foreground">Water Supply - Ramgarh District</p>
+                  </div>
+                  <Link to="/proposal">
+                    <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90">
+                      Review
+                    </button>
+                  </Link>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                  <div>
+                    <p className="font-semibold text-foreground">Proposal #2025-046</p>
+                    <p className="text-sm text-muted-foreground">Healthcare Center - Sitapur</p>
+                  </div>
+                  <Link to="/proposal">
+                    <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90">
+                      Review
+                    </button>
+                  </Link>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                  <div>
+                    <p className="font-semibold text-foreground">Proposal #2025-047</p>
+                    <p className="text-sm text-muted-foreground">Road Extension - Laxmipur</p>
+                  </div>
+                  <Link to="/proposal">
+                    <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90">
+                      Review
+                    </button>
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-accent/20">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1">Pending Proposals</p>
-                <p className="text-3xl font-bold text-accent">{stats.pendingProposals}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-primary/20">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1">Total Grievances</p>
-                <p className="text-3xl font-bold text-primary">{stats.totalGrievances}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-destructive/20">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1">Pending Grievances</p>
-                <p className="text-3xl font-bold text-destructive">{stats.pendingGrievances}</p>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5 text-blue-500" />
+                Recent Activity Logs
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                  <div className="h-2 w-2 rounded-full bg-green-500 mt-2"></div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Agency "PWD North" created proposal</p>
+                    <p className="text-xs text-muted-foreground">2 hours ago</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                  <div className="h-2 w-2 rounded-full bg-blue-500 mt-2"></div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Citizen "Ramesh Kumar" filed complaint</p>
+                    <p className="text-xs text-muted-foreground">5 hours ago</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                  <div className="h-2 w-2 rounded-full bg-purple-500 mt-2"></div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Proposal #2025-042 approved</p>
+                    <p className="text-xs text-muted-foreground">1 day ago</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                  <div className="h-2 w-2 rounded-full bg-orange-500 mt-2"></div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">New agency "Rural Dev South" registered</p>
+                    <p className="text-xs text-muted-foreground">2 days ago</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Management Tabs */}
-        <Tabs defaultValue="proposals" className="space-y-6">
-          <TabsList className="grid w-full md:w-auto grid-cols-2">
-            <TabsTrigger value="proposals">Proposals Management</TabsTrigger>
-            <TabsTrigger value="grievances">Grievances Management</TabsTrigger>
-          </TabsList>
-
-          {/* Proposals Tab */}
-          <TabsContent value="proposals">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Proposal Management
-                </CardTitle>
-                <CardDescription>Review, approve, or reject agency proposals</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Agency</TableHead>
-                        <TableHead>State</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Expected Impact</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {proposals.map((proposal) => (
-                        <TableRow key={proposal.id}>
-                          <TableCell className="font-mono text-xs">{proposal.id}</TableCell>
-                          <TableCell className="font-medium">{proposal.agencyName}</TableCell>
-                          <TableCell>{proposal.state}</TableCell>
-                          <TableCell>{proposal.title}</TableCell>
-                          <TableCell className="text-sm">{proposal.expectedImpact}</TableCell>
-                          <TableCell>{getStatusBadge(proposal.status)}</TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {new Date(proposal.submittedAt).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {proposal.status === 'pending' && (
-                              <div className="flex gap-2 justify-end">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleProposalAction(proposal.id, 'approved')}
-                                >
-                                  Approve
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  onClick={() => handleProposalAction(proposal.id, 'rejected')}
-                                >
-                                  Reject
-                                </Button>
-                              </div>
-                            )}
-                            {proposal.status !== 'pending' && (
-                              <span className="text-sm text-muted-foreground">No action needed</span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {proposals.length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                            No proposals found
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Grievances Tab */}
-          <TabsContent value="grievances">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5" />
-                  Grievance Management
-                </CardTitle>
-                <CardDescription>View and manage citizen grievances</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>State</TableHead>
-                        <TableHead>Agency</TableHead>
-                        <TableHead>Component</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {grievances.map((grievance) => (
-                        <TableRow key={grievance.id}>
-                          <TableCell className="font-mono text-xs">{grievance.id}</TableCell>
-                          <TableCell className="font-medium">{grievance.name}</TableCell>
-                          <TableCell>{grievance.state}</TableCell>
-                          <TableCell>{grievance.agency}</TableCell>
-                          <TableCell>{grievance.component}</TableCell>
-                          <TableCell className="max-w-xs truncate">{grievance.description}</TableCell>
-                          <TableCell>{getStatusBadge(grievance.status)}</TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {new Date(grievance.submittedAt).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex gap-2 justify-end">
-                              {grievance.status === 'pending' && (
-                                <Button
-                                  size="sm"
-                                  variant="secondary"
-                                  onClick={() => handleGrievanceAction(grievance.id, 'in-progress')}
-                                >
-                                  Start
-                                </Button>
-                              )}
-                              {grievance.status === 'in-progress' && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleGrievanceAction(grievance.id, 'resolved')}
-                                >
-                                  Resolve
-                                </Button>
-                              )}
-                              {grievance.status === 'resolved' && (
-                                <span className="text-sm text-muted-foreground">Resolved</span>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {grievances.length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                            No grievances found
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* Complaint Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-red-500" />
+              Complaint Management Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                <p className="text-2xl font-bold text-foreground">24</p>
+                <p className="text-sm text-muted-foreground">Pending Complaints</p>
+              </div>
+              <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                <p className="text-2xl font-bold text-foreground">156</p>
+                <p className="text-sm text-muted-foreground">Resolved This Month</p>
+              </div>
+              <div className="p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <p className="text-2xl font-bold text-foreground">92%</p>
+                <p className="text-sm text-muted-foreground">Resolution Rate</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );

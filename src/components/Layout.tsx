@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { RefreshCw, User, MapPin, UserCog, Shield, Moon, Sun } from "lucide-react";
+import { RefreshCw, MapPin, Moon, Sun, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
+import { useAuth } from "@/contexts/AuthContext";
 import AIChatbot from "./AIChatbot";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [loginType, setLoginType] = useState<"citizen" | "agency" | "admin">("citizen");
 
   const handleRefresh = () => {
     setLastUpdated(new Date().toLocaleTimeString());
@@ -23,10 +23,61 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  const openLoginDialog = (type: "citizen" | "agency" | "admin") => {
-    setLoginType(type);
-    setLoginDialogOpen(true);
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out",
+    });
   };
+
+  // Role-based navigation menus
+  const getNavigationItems = () => {
+    if (!user) return [];
+
+    const citizenMenu = [
+      { path: "/citizen-dashboard", label: "Home" },
+      { path: "/map", label: "View Map" },
+      { path: "/transparency", label: "Transparency Portal" },
+      { path: "/file-complaint", label: "File Complaint" },
+      { path: "/impact", label: "Impact Metrics" },
+      { path: "/about", label: "About" },
+    ];
+
+    const agencyMenu = [
+      { path: "/agency-dashboard", label: "Home" },
+      { path: "/mapping", label: "Mapping" },
+      { path: "/proposal", label: "Create Proposal" },
+      { path: "/dashboard", label: "Proposal Status" },
+      { path: "/impact", label: "Impact Metrics" },
+      { path: "/comparison", label: "Comparison" },
+      { path: "/file-complaint", label: "File Complaint" },
+    ];
+
+    const adminMenu = [
+      { path: "/admin-dashboard", label: "Home" },
+      { path: "/dashboard", label: "Dashboard" },
+      { path: "/mapping", label: "Manage Agencies" },
+      { path: "/transparency", label: "Transparency Control" },
+      { path: "/impact", label: "Reports" },
+      { path: "/comparison", label: "Comparison" },
+      { path: "/about", label: "System Settings" },
+    ];
+
+    switch (user.role) {
+      case "citizen":
+        return citizenMenu;
+      case "official":
+        return agencyMenu;
+      case "admin":
+        return adminMenu;
+      default:
+        return [];
+    }
+  };
+
+  const navigationItems = getNavigationItems();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -72,110 +123,52 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
 
-              {/* Demo Login Icons */}
-              <div className="flex items-center gap-2 border-l border-border pl-3">
-                <Button
-                  onClick={() => openLoginDialog("citizen")}
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 hover:bg-primary/10"
-                  title="Citizen Login (Demo)"
-                >
-                  <User className="h-4 w-4" />
-                  <span className="hidden lg:inline text-xs">Citizen</span>
-                </Button>
-                <Button
-                  onClick={() => openLoginDialog("agency")}
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 hover:bg-accent/10"
-                  title="Agency Login (Demo)"
-                >
-                  <UserCog className="h-4 w-4" />
-                  <span className="hidden lg:inline text-xs">Agency</span>
-                </Button>
-                <Button
-                  onClick={() => openLoginDialog("admin")}
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 hover:bg-destructive/10"
-                  title="Admin Login (Demo)"
-                >
-                  <Shield className="h-4 w-4" />
-                  <span className="hidden lg:inline text-xs">Admin</span>
-                </Button>
-              </div>
+              {/* User Info & Logout */}
+              {user && (
+                <div className="flex items-center gap-2 border-l border-border pl-3">
+                  <div className="hidden md:block text-sm">
+                    <p className="font-semibold text-foreground">{user.name}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{user.role === "official" ? "Agency" : user.role}</p>
+                  </div>
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
+                    title="Logout"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="hidden lg:inline">Logout</span>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Login Dialog */}
-      <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {loginType === "citizen" && <User className="h-5 w-5" />}
-              {loginType === "agency" && <UserCog className="h-5 w-5" />}
-              {loginType === "admin" && <Shield className="h-5 w-5" />}
-              {loginType.charAt(0).toUpperCase() + loginType.slice(1)} Login
-            </DialogTitle>
-            <DialogDescription>
-              This is a demonstration portal for Smart India Hackathon 2025
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="rounded-lg bg-accent/10 border border-accent/20 p-4">
-              <p className="text-sm text-foreground font-semibold mb-2">
-                🎯 Demo Access Mode
-              </p>
-              <p className="text-sm text-muted-foreground">
-                All features are accessible without authentication for demonstration purposes. 
-                No login credentials required.
-              </p>
+      {/* Navigation - Only show if user is logged in */}
+      {user && navigationItems.length > 0 && (
+        <nav className="bg-card/80 border-b border-border backdrop-blur-sm">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center gap-1 overflow-x-auto py-2">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                    location.pathname === item.path
+                      ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
-            <Button 
-              onClick={() => setLoginDialogOpen(false)} 
-              className="w-full"
-            >
-              Continue Exploring
-            </Button>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Navigation */}
-      <nav className="bg-card/80 border-b border-border backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-1 overflow-x-auto py-2">
-            {[
-              { path: "/", label: "Home" },
-              { path: "/about", label: "About" },
-              { path: "/funds", label: "Funds" },
-              { path: "/schemes", label: "Schemes" },
-              { path: "/courses", label: "Courses" },
-              { path: "/eligibility", label: "Eligibility" },
-              { path: "/agency-analysis", label: "Agencies" },
-              { path: "/proposal", label: "Proposal" },
-              { path: "/file-complaint", label: "Grievance" },
-              { path: "/transparency", label: "Transparency" },
-              { path: "/admin", label: "Admin" },
-            ].map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                  location.pathname === item.path
-                    ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-md"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </nav>
+        </nav>
+      )}
 
       {/* Main Content */}
       <main className="flex-1">{children}</main>
