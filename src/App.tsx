@@ -24,6 +24,7 @@ import SchemeDetails from "./pages/SchemeDetails";
 import CourseSelection from "./pages/CourseSelection";
 import GrantEligibility from "./pages/GrantEligibility";
 import AgencyAnalytics from "./pages/AgencyAnalytics";
+import DataDashboard from "./pages/DataDashboard";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/courses" element={<CourseSelection />} />
             <Route path="/grant-eligibility" element={<GrantEligibility />} />
             <Route path="/agency-analytics" element={<AgencyAnalytics />} />
+            <Route path="/data-dashboard" element={<DataDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

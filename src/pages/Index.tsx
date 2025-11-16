@@ -221,6 +221,23 @@ const Index = () => {
                   </Button>
                 </CardContent>
               </Card>
+
+              <Card className="hover:shadow-[0_0_30px_hsl(217_91%_55%/0.3)] transition-all border-primary/20">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                    <TrendingUp className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle>Live Data Dashboard</CardTitle>
+                  <CardDescription>
+                    Real-time data from Data.gov.in with interactive tables and charts
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild className="w-full">
+                    <Link to="/data-dashboard">View Live Data</Link>
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
