@@ -31,6 +31,8 @@ import CitizenGrievance from "./pages/CitizenGrievance";
 import CitizenGrievanceView from "./pages/CitizenGrievanceView";
 import AdminGrievanceManagement from "./pages/AdminGrievanceManagement";
 import AdminGrantReports from "./pages/AdminGrantReports";
+import AgencyProposalSubmit from "./pages/AgencyProposalSubmit";
+import AgencyProposals from "./pages/AgencyProposals";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +70,8 @@ const App = () => (
             <Route path="/citizen/grievance/view" element={<CitizenGrievanceView />} />
             <Route path="/admin/grievances" element={<AdminGrievanceManagement />} />
             <Route path="/admin/grant-reports" element={<AdminGrantReports />} />
+            <Route path="/agency/proposals/submit" element={<AgencyProposalSubmit />} />
+            <Route path="/agency/proposals" element={<AgencyProposals />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
