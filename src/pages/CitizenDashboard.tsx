@@ -9,6 +9,7 @@ const CitizenDashboard = () => {
     { icon: IndianRupee, label: "Grant-in-Aid", path: "/citizen/grant-in-aid", color: "text-emerald-600" },
     { icon: FileText, label: "Course Registration", path: "/citizen/course-registration", color: "text-blue-600" },
     { icon: List, label: "My Registrations", path: "/citizen/registrations", color: "text-cyan-600" },
+    { icon: Award, label: "My Certificates", path: "/citizen/certificates", color: "text-green-600" },
     { icon: Map, label: "View Map", path: "/map", color: "text-blue-500" },
     { icon: Eye, label: "Transparency Portal", path: "/transparency", color: "text-green-500" },
     { icon: MessageSquare, label: "Submit Grievance", path: "/citizen/grievance", color: "text-orange-500" },
