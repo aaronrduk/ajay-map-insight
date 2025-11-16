@@ -86,13 +86,28 @@ export const initiateRegistration = async (userData: UserData): Promise<OTPRespo
 
     if (otpError) throw otpError;
 
-    // Send OTP via email (simulate for now)
-    console.log(`OTP for ${userData.email}: ${otp}`);
+    // Send OTP via email
+    try {
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-otp-email', {
+        body: {
+          to: userData.email,
+          otp,
+          type: 'registration',
+          name: userData.name
+        }
+      });
 
-    // In production, call edge function to send email
-    // await supabase.functions.invoke('send-otp-email', {
-    //   body: { email: userData.email, otp, type: 'registration' }
-    // });
+      if (emailError) {
+        console.error('Email sending failed:', emailError);
+      } else {
+        console.log('Email sent:', emailData);
+      }
+    } catch (emailError) {
+      console.error('Failed to send OTP email:', emailError);
+    }
+
+    // Also log to console for development
+    console.log(`OTP for ${userData.email}: ${otp}`);
 
     return {
       success: true,
@@ -232,7 +247,27 @@ export const initiateLogin = async (
 
     if (otpError) throw otpError;
 
-    // Send OTP via email (simulate for now)
+    // Send OTP via email
+    try {
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-otp-email', {
+        body: {
+          to: user.email,
+          otp,
+          type: 'login',
+          name: user.name
+        }
+      });
+
+      if (emailError) {
+        console.error('Email sending failed:', emailError);
+      } else {
+        console.log('Email sent:', emailData);
+      }
+    } catch (emailError) {
+      console.error('Failed to send OTP email:', emailError);
+    }
+
+    // Also log to console for development
     console.log(`Login OTP for ${user.email}: ${otp}`);
 
     return {
@@ -360,6 +395,27 @@ export const resendOTP = async (email: string, type: 'registration' | 'login'): 
       });
 
     if (error) throw error;
+
+    // Send OTP via email
+    try {
+      const userName = (existingOTP?.user_data as any)?.name || '';
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-otp-email', {
+        body: {
+          to: email,
+          otp,
+          type,
+          name: userName
+        }
+      });
+
+      if (emailError) {
+        console.error('Email sending failed:', emailError);
+      } else {
+        console.log('Email sent:', emailData);
+      }
+    } catch (emailError) {
+      console.error('Failed to send OTP email:', emailError);
+    }
 
     console.log(`Resent OTP for ${email}: ${otp}`);
 
