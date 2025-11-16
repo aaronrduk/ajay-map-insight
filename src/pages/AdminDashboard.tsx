@@ -1,12 +1,14 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, LayoutDashboard, Building2, Users, Eye, FileText, GitCompare, Settings } from "lucide-react";
+import { Home, LayoutDashboard, Building2, Users, Eye, FileText, GitCompare, Settings, MessageSquare, IndianRupee } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
   const menuItems = [
     { icon: Home, label: "Home", path: "/admin-dashboard", color: "text-primary" },
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", color: "text-blue-500" },
+    { icon: MessageSquare, label: "Grievance Management", path: "/admin/grievances", color: "text-red-500" },
+    { icon: IndianRupee, label: "Grant Reports", path: "/admin/grant-reports", color: "text-emerald-600" },
     { icon: Building2, label: "Manage Agencies", path: "/mapping", color: "text-green-500" },
     { icon: Users, label: "Manage Citizens", path: "/transparency", color: "text-purple-500" },
     { icon: Eye, label: "Transparency Control", path: "/transparency", color: "text-orange-500" },
@@ -24,7 +26,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Access Menu */}
-        <div className="grid md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {menuItems.map((item) => (
             <Link key={item.path} to={item.path}>
               <Card className="hover:shadow-lg transition-all cursor-pointer group border-2 hover:border-accent/50">
