@@ -1,11 +1,13 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, Map, FileText, CheckCircle, TrendingUp, GitCompare, AlertCircle } from "lucide-react";
+import { Home, Map, FileText, CheckCircle, TrendingUp, GitCompare, AlertCircle, Send, List } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const AgencyDashboard = () => {
   const menuItems = [
     { icon: Home, label: "Home", path: "/agency-dashboard", color: "text-primary" },
+    { icon: Send, label: "Submit Proposal", path: "/agency/proposals/submit", color: "text-emerald-600" },
+    { icon: List, label: "My Proposals", path: "/agency/proposals", color: "text-blue-600" },
     { icon: Map, label: "Mapping", path: "/mapping", color: "text-blue-500" },
     { icon: FileText, label: "Create Proposal", path: "/proposal", color: "text-green-500" },
     { icon: CheckCircle, label: "Proposal Status", path: "/dashboard", color: "text-purple-500" },

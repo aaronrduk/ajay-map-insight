@@ -9,10 +9,10 @@ const AdminDashboard = () => {
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", color: "text-blue-500" },
     { icon: MessageSquare, label: "Grievance Management", path: "/admin/grievances", color: "text-red-500" },
     { icon: IndianRupee, label: "Grant Reports", path: "/admin/grant-reports", color: "text-emerald-600" },
+    { icon: FileText, label: "Proposal Review", path: "/admin/proposals", color: "text-violet-600" },
     { icon: Building2, label: "Manage Agencies", path: "/mapping", color: "text-green-500" },
     { icon: Users, label: "Manage Citizens", path: "/transparency", color: "text-purple-500" },
     { icon: Eye, label: "Transparency Control", path: "/transparency", color: "text-orange-500" },
-    { icon: FileText, label: "Reports", path: "/impact", color: "text-pink-500" },
     { icon: GitCompare, label: "Comparison", path: "/comparison", color: "text-yellow-500" },
     { icon: Settings, label: "System Settings", path: "/about", color: "text-gray-500" },
   ];

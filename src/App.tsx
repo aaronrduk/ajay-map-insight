@@ -33,6 +33,8 @@ import AdminGrievanceManagement from "./pages/AdminGrievanceManagement";
 import AdminGrantReports from "./pages/AdminGrantReports";
 import AgencyProposalSubmit from "./pages/AgencyProposalSubmit";
 import AgencyProposals from "./pages/AgencyProposals";
+import AdminProposalReview from "./pages/AdminProposalReview";
+import CitizenCourseRegistration from "./pages/CitizenCourseRegistration";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +74,8 @@ const App = () => (
             <Route path="/admin/grant-reports" element={<AdminGrantReports />} />
             <Route path="/agency/proposals/submit" element={<AgencyProposalSubmit />} />
             <Route path="/agency/proposals" element={<AgencyProposals />} />
+            <Route path="/admin/proposals" element={<AdminProposalReview />} />
+            <Route path="/citizen/course-registration" element={<CitizenCourseRegistration />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
