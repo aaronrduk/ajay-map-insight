@@ -9,16 +9,15 @@ const Home = () => {
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    // Redirect authenticated users to their dashboard
     if (isAuthenticated && user) {
       switch (user.role) {
         case "citizen":
           navigate("/citizen-dashboard");
           break;
-        case "official":
+        case "agency":
           navigate("/agency-dashboard");
           break;
-        case "admin":
+        case "administrator":
           navigate("/admin-dashboard");
           break;
       }
@@ -71,14 +70,14 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card 
-            className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-secondary/50 bg-card/50 backdrop-blur"
+          <Card
+            className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-accent/50 bg-card/50 backdrop-blur"
             onClick={() => handleLoginClick("agency")}
           >
             <CardContent className="pt-12 pb-8 text-center">
               <div className="mb-6 flex justify-center">
-                <div className="p-4 rounded-full bg-secondary/10 group-hover:bg-secondary/20 transition-colors">
-                  <Building2 className="h-12 w-12 text-secondary" />
+                <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
+                  <Building2 className="h-12 w-12 text-accent" />
                 </div>
               </div>
               <h3 className="text-2xl font-bold mb-3 text-foreground">Agency Login</h3>
@@ -92,14 +91,14 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card 
-            className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-accent/50 bg-card/50 backdrop-blur"
-            onClick={() => handleLoginClick("admin")}
+          <Card
+            className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-secondary/50 bg-card/50 backdrop-blur"
+            onClick={() => handleLoginClick("administrator")}
           >
             <CardContent className="pt-12 pb-8 text-center">
               <div className="mb-6 flex justify-center">
-                <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
-                  <Shield className="h-12 w-12 text-accent" />
+                <div className="p-4 rounded-full bg-secondary/10 group-hover:bg-secondary/20 transition-colors">
+                  <Shield className="h-12 w-12 text-secondary" />
                 </div>
               </div>
               <h3 className="text-2xl font-bold mb-3 text-foreground">Admin Login</h3>
@@ -122,11 +121,11 @@ const Home = () => {
               <div className="text-muted-foreground">Villages Covered</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-secondary mb-2">₹50Cr</div>
+              <div className="text-4xl font-bold text-accent mb-2">₹50Cr</div>
               <div className="text-muted-foreground">Funds Allocated</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-accent mb-2">100%</div>
+              <div className="text-4xl font-bold text-secondary mb-2">100%</div>
               <div className="text-muted-foreground">Transparency</div>
             </div>
           </div>
