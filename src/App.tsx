@@ -35,6 +35,8 @@ import AgencyProposalSubmit from "./pages/AgencyProposalSubmit";
 import AgencyProposals from "./pages/AgencyProposals";
 import AdminProposalReview from "./pages/AdminProposalReview";
 import CitizenCourseRegistration from "./pages/CitizenCourseRegistration";
+import CitizenMyRegistrations from "./pages/CitizenMyRegistrations";
+import AdminCourseRegistrationReview from "./pages/AdminCourseRegistrationReview";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +78,8 @@ const App = () => (
             <Route path="/agency/proposals" element={<AgencyProposals />} />
             <Route path="/admin/proposals" element={<AdminProposalReview />} />
             <Route path="/citizen/course-registration" element={<CitizenCourseRegistration />} />
+            <Route path="/citizen/registrations" element={<CitizenMyRegistrations />} />
+            <Route path="/admin/registrations" element={<AdminCourseRegistrationReview />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

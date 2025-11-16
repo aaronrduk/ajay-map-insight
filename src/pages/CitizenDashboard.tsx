@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, Map, Eye, AlertCircle, TrendingUp, Info, IndianRupee, MessageSquare, FileSearch, FileText } from "lucide-react";
+import { Home, Map, Eye, AlertCircle, TrendingUp, Info, IndianRupee, MessageSquare, FileSearch, FileText, List } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CitizenDashboard = () => {
@@ -8,6 +8,7 @@ const CitizenDashboard = () => {
     { icon: Home, label: "Home", path: "/citizen-dashboard", color: "text-primary" },
     { icon: IndianRupee, label: "Grant-in-Aid", path: "/citizen/grant-in-aid", color: "text-emerald-600" },
     { icon: FileText, label: "Course Registration", path: "/citizen/course-registration", color: "text-blue-600" },
+    { icon: List, label: "My Registrations", path: "/citizen/registrations", color: "text-cyan-600" },
     { icon: Map, label: "View Map", path: "/map", color: "text-blue-500" },
     { icon: Eye, label: "Transparency Portal", path: "/transparency", color: "text-green-500" },
     { icon: MessageSquare, label: "Submit Grievance", path: "/citizen/grievance", color: "text-orange-500" },

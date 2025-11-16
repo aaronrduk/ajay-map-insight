@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, LayoutDashboard, Building2, Users, Eye, FileText, GitCompare, Settings, MessageSquare, IndianRupee } from "lucide-react";
+import { Home, LayoutDashboard, Building2, Users, Eye, FileText, GitCompare, Settings, MessageSquare, IndianRupee, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
@@ -10,6 +10,7 @@ const AdminDashboard = () => {
     { icon: MessageSquare, label: "Grievance Management", path: "/admin/grievances", color: "text-red-500" },
     { icon: IndianRupee, label: "Grant Reports", path: "/admin/grant-reports", color: "text-emerald-600" },
     { icon: FileText, label: "Proposal Review", path: "/admin/proposals", color: "text-violet-600" },
+    { icon: GraduationCap, label: "Registration Review", path: "/admin/registrations", color: "text-cyan-600" },
     { icon: Building2, label: "Manage Agencies", path: "/mapping", color: "text-green-500" },
     { icon: Users, label: "Manage Citizens", path: "/transparency", color: "text-purple-500" },
     { icon: Eye, label: "Transparency Control", path: "/transparency", color: "text-orange-500" },

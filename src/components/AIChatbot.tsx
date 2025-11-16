@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Loader2, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MessageCircle, X, Send, Loader2, Sparkles, ExternalLink } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
@@ -10,9 +11,12 @@ import { supabase } from "@/integrations/supabase/client";
 interface Message {
   text: string;
   isBot: boolean;
+  link?: string;
+  linkText?: string;
 }
 
 const AIChatbot = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { text: "Hello! I'm AJAY AI Assistant. Ask me anything about PM-AJAY agencies, projects, or procedures.", isBot: true },
@@ -48,9 +52,11 @@ const AIChatbot = () => {
       if (error) throw error;
 
       // Add bot response
-      setMessages((prev) => [...prev, { 
-        text: data.reply || "I apologize, but I couldn't generate a response.", 
-        isBot: true 
+      setMessages((prev) => [...prev, {
+        text: data.reply || "I apologize, but I couldn't generate a response.",
+        isBot: true,
+        link: data.link,
+        linkText: data.linkText
       }]);
     } catch (error) {
       console.error('Chat error:', error);
@@ -154,6 +160,20 @@ const AIChatbot = () => {
                   }`}
                 >
                   <p className="text-sm whitespace-pre-line leading-relaxed">{msg.text}</p>
+                  {msg.link && msg.linkText && (
+                    <Button
+                      onClick={() => {
+                        navigate(msg.link!);
+                        setIsOpen(false);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 gap-2 w-full"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      {msg.linkText}
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
