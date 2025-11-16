@@ -1,13 +1,16 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, Map, Eye, AlertCircle, TrendingUp, Info } from "lucide-react";
+import { Home, Map, Eye, AlertCircle, TrendingUp, Info, IndianRupee, MessageSquare, FileSearch } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CitizenDashboard = () => {
   const menuItems = [
     { icon: Home, label: "Home", path: "/citizen-dashboard", color: "text-primary" },
+    { icon: IndianRupee, label: "Grant-in-Aid", path: "/citizen/grant-in-aid", color: "text-emerald-600" },
     { icon: Map, label: "View Map", path: "/map", color: "text-blue-500" },
     { icon: Eye, label: "Transparency Portal", path: "/transparency", color: "text-green-500" },
+    { icon: MessageSquare, label: "Submit Grievance", path: "/citizen/grievance", color: "text-orange-500" },
+    { icon: FileSearch, label: "View My Grievances", path: "/citizen/grievance/view", color: "text-violet-500" },
     { icon: AlertCircle, label: "File Complaint", path: "/file-complaint", color: "text-red-500" },
     { icon: TrendingUp, label: "Impact Metrics", path: "/impact", color: "text-purple-500" },
     { icon: Info, label: "About", path: "/about", color: "text-gray-500" },
@@ -22,7 +25,7 @@ const CitizenDashboard = () => {
         </div>
 
         {/* Quick Access Menu */}
-        <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
           {menuItems.map((item) => (
             <Link key={item.path} to={item.path}>
               <Card className="hover:shadow-lg transition-all cursor-pointer group border-2 hover:border-primary/50">
