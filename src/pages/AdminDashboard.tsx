@@ -1,11 +1,12 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, LayoutDashboard, Building2, Users, Eye, FileText, GitCompare, Settings, MessageSquare, IndianRupee, GraduationCap } from "lucide-react";
+import { Home, LayoutDashboard, Building2, Users, Eye, FileText, GitCompare, Settings, MessageSquare, IndianRupee, GraduationCap, Database } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
   const menuItems = [
     { icon: Home, label: "Home", path: "/admin-dashboard", color: "text-primary" },
+    { icon: Database, label: "PM-AJAY Data Sync", path: "/admin/pm-ajay-sync", color: "text-blue-600" },
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", color: "text-blue-500" },
     { icon: MessageSquare, label: "Grievance Management", path: "/admin/grievances", color: "text-red-500" },
     { icon: IndianRupee, label: "Grant Reports", path: "/admin/grant-reports", color: "text-emerald-600" },

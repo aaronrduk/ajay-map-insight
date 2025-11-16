@@ -37,6 +37,7 @@ import AdminProposalReview from "./pages/AdminProposalReview";
 import CitizenCourseRegistration from "./pages/CitizenCourseRegistration";
 import CitizenMyRegistrations from "./pages/CitizenMyRegistrations";
 import AdminCourseRegistrationReview from "./pages/AdminCourseRegistrationReview";
+import AdminPMAjaySync from "./pages/AdminPMAjaySync";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => (
             <Route path="/citizen/course-registration" element={<CitizenCourseRegistration />} />
             <Route path="/citizen/registrations" element={<CitizenMyRegistrations />} />
             <Route path="/admin/registrations" element={<AdminCourseRegistrationReview />} />
+            <Route path="/admin/pm-ajay-sync" element={<AdminPMAjaySync />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
