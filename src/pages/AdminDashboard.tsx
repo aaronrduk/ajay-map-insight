@@ -7,6 +7,7 @@ const AdminDashboard = () => {
   const menuItems = [
     { icon: Home, label: "Home", path: "/admin-dashboard", color: "text-primary" },
     { icon: Database, label: "PM-AJAY Data Sync", path: "/admin/pm-ajay-sync", color: "text-blue-600" },
+    { icon: GraduationCap, label: "Courses & Colleges Sync", path: "/admin/courses-sync", color: "text-emerald-600" },
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", color: "text-blue-500" },
     { icon: MessageSquare, label: "Grievance Management", path: "/admin/grievances", color: "text-red-500" },
     { icon: IndianRupee, label: "Grant Reports", path: "/admin/grant-reports", color: "text-emerald-600" },
