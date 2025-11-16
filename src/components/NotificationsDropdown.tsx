@@ -29,33 +29,48 @@ export default function NotificationsDropdown() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchNotifications();
+    let channel: any;
 
-    const channel = supabase
-      .channel("notifications")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-        },
-        (payload) => {
-          setNotifications((prev) => [payload.new as Notification, ...prev]);
-          setUnreadCount((prev) => prev + 1);
-        }
-      )
-      .subscribe();
+    const initNotifications = async () => {
+      await fetchNotifications();
+
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user?.id) return;
+
+      channel = supabase
+        .channel("notifications")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${userData.user.id}`,
+          },
+          (payload) => {
+            setNotifications((prev) => [payload.new as Notification, ...prev]);
+            setUnreadCount((prev) => prev + 1);
+          }
+        )
+        .subscribe();
+    };
+
+    initNotifications();
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 
   const fetchNotifications = async () => {
     try {
       const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user?.id) return;
+      if (!userData?.user?.id) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("notifications")
@@ -64,7 +79,11 @@ export default function NotificationsDropdown() {
         .order("created_at", { ascending: false })
         .limit(10);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching notifications:", error);
+        setLoading(false);
+        return;
+      }
 
       setNotifications(data || []);
       setUnreadCount(data?.filter((n) => !n.read).length || 0);
