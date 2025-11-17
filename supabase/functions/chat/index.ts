@@ -1,164 +1,107 @@
-import { createClient } from 'npm:@supabase/supabase-js@2';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-async function findRoute(supabase: any, query: string) {
-  const queryLower = query.toLowerCase();
-  
-  const { data, error } = await supabase
-    .from('route_index')
-    .select('*')
-    .or(`title.ilike.%${queryLower}%,description.ilike.%${queryLower}%`)
-    .limit(3);
-
-  if (error || !data || data.length === 0) {
-    return null;
-  }
-
-  for (const route of data) {
-    if (route.keywords) {
-      for (const keyword of route.keywords) {
-        if (queryLower.includes(keyword.toLowerCase())) {
-          return route;
-        }
-      }
-    }
-  }
-
-  return data[0];
-}
-
-Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 200, headers: corsHeaders });
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { message } = await req.json();
-    
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const route = await findRoute(supabase, message);
-
-    const navigationKeywords = [
-      'how', 'where', 'submit', 'register', 'apply', 'file', 'view', 'check',
-      'grievance', 'complaint', 'proposal', 'course', 'grant', 'eligibility'
-    ];
-    
-    const isNavigationQuery = navigationKeywords.some(kw => 
-      message.toLowerCase().includes(kw)
-    );
-
-    if (route && isNavigationQuery) {
-      let reply = '';
-      
-      if (message.toLowerCase().includes('grievance') || message.toLowerCase().includes('complaint')) {
-        reply = `To submit a grievance or complaint, please visit the **${route.title}** page.\n\n`;
-        reply += `This page allows you to file complaints and track their status. You'll need to provide details about your issue and any supporting information.`;
-      } else if (message.toLowerCase().includes('course') || message.toLowerCase().includes('register')) {
-        reply = `You can register for courses on the **${route.title}** page.\n\n`;
-        reply += `Select your desired course, choose a college, and provide your reason for enrollment. Admin will review and approve your registration.`;
-      } else if (message.toLowerCase().includes('proposal')) {
-        reply = `To submit or view proposals, go to the **${route.title}** page.\n\n`;
-        reply += `You can submit project proposals with detailed descriptions, and track their approval status from the admin team.`;
-      } else if (message.toLowerCase().includes('grant') || message.toLowerCase().includes('eligibility')) {
-        reply = `Check out the **${route.title}** page for grant-related services.\n\n`;
-        reply += `You can apply for grants, check your eligibility, and track the status of your applications.`;
-      } else {
-        reply = `I found the **${route.title}** page that might help you.\n\n${route.description}`;
-      }
-
-      return new Response(
-        JSON.stringify({
-          reply,
-          link: route.path,
-          linkText: `Go to ${route.title}`
-        }),
-        {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-    }
-
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
-      return new Response(
-        JSON.stringify({
-          reply: 'I can help you navigate the PM-AJAY portal. Try asking about submitting grievances, registering for courses, or applying for grants.'
-        }),
-        {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are AJAY AI Assistant for the PM-AJAY portal. Help users with:
-- Grievance submission and tracking
-- Course registration
-- Grant applications and eligibility
-- Proposal submissions
-- Scheme information
+    console.log("Received message:", message);
 
-Provide helpful, concise answers. When users ask about navigation, guide them to the appropriate portal section.`;
+    const systemPrompt = `You are AJAY AI Assistant, a helpful chatbot for the PM-AJAY (Pradhan Mantri Anusuchit Jaati Abhyudan Yojana) Agency Mapping Portal. 
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
+Your role is to help users understand:
+- Which agencies are responsible for different PM-AJAY components across states and districts
+- Information about projects like Adarsh Gram, Hostels for SC Students, NGO Projects, Skill Development, and Infrastructure
+- How to apply for projects and submit proposals
+- Fund allocation and utilization status
+- Grievance tracking procedures
+
+Sample data you can reference:
+- Adarsh Gram in Kerala, Kollam: District Collector, Panchayat, PWD (Ongoing, ₹50 lakhs allocated, ₹32 lakhs utilized)
+- Hostels for SC Students in Tamil Nadu, Chennai: Social Welfare Dept, MoSJ&E (Approved, ₹2 Cr allocated, ₹1.4 Cr utilized)
+- NGO Project in UP, Lucknow: Local NGO, Collector (Completed, ₹25 lakhs allocated and utilized)
+
+Provide helpful, concise answers about agency responsibilities, project status, and procedures. Direct users to relevant pages in the portal when appropriate.`;
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: "google/gemini-2.5-flash",
         messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message }
         ],
       }),
     });
 
     if (!response.ok) {
-      if (response.status === 429 || response.status === 402) {
+      const errorText = await response.text();
+      console.error("AI gateway error:", response.status, errorText);
+      
+      if (response.status === 429) {
         return new Response(
           JSON.stringify({ 
-            reply: 'I can help you navigate the portal. Try asking: "How do I submit a grievance?" or "Where can I register for courses?"'
+            error: "Rate limit exceeded. Please try again in a moment." 
           }),
           {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
           }
         );
       }
+      
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ 
+            error: "AI service requires additional credits. Please contact support." 
+          }),
+          {
+            status: 402,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || 'I apologize, but I couldn\'t generate a response.';
+    const reply = data.choices?.[0]?.message?.content || "I apologize, but I couldn't generate a response.";
+
+    console.log("AI response:", reply);
 
     return new Response(
       JSON.stringify({ reply }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   } catch (error) {
+    console.error("chat error:", error);
     return new Response(
       JSON.stringify({ 
-        reply: 'I\'m here to help you navigate the PM-AJAY portal. You can ask about grievances, courses, grants, or proposals.'
+        error: error instanceof Error ? error.message : "Unknown error" 
       }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }

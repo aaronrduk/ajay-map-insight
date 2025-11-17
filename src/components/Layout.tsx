@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/contexts/AuthContext";
 import AIChatbot from "./AIChatbot";
-import NotificationsDropdown from "./NotificationsDropdown";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -123,8 +122,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               >
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
-
-              {user && <NotificationsDropdown />}
 
               {/* User Info & Logout */}
               {user && (
