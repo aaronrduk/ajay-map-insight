@@ -160,3 +160,113 @@ export const useFilterOptions = () => {
 
   return { states, years, agencies, components };
 };
+
+export const useAgencyProposals = (userId?: string, status?: string) => {
+  return useQuery({
+    queryKey: ["agency-proposals", userId, status],
+    queryFn: () => api.fetchAgencyProposals(userId, status),
+    enabled: !!userId,
+  });
+};
+
+export const useSubmitAgencyProposal = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: api.submitAgencyProposal,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agency-proposals"] });
+    },
+  });
+};
+
+export const useUpdateAgencyProposal = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status, reply, adminId }: {
+      id: string;
+      status: string;
+      reply?: string;
+      adminId?: string;
+    }) => api.updateAgencyProposalStatus(id, status, reply, adminId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agency-proposals"] });
+    },
+  });
+};
+
+export const useCourseRegistrationsNew = (userId?: string, status?: string) => {
+  return useQuery({
+    queryKey: ["course-registrations-new", userId, status],
+    queryFn: () => api.fetchCourseRegistrationsNew(userId, status),
+  });
+};
+
+export const useSubmitCourseRegistrationNew = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: api.submitCourseRegistrationNew,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["course-registrations-new"] });
+    },
+  });
+};
+
+export const useUpdateCourseRegistration = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status, comment, adminId }: {
+      id: string;
+      status: string;
+      comment?: string;
+      adminId?: string;
+    }) => api.updateCourseRegistrationStatus(id, status, comment, adminId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["course-registrations-new"] });
+    },
+  });
+};
+
+export const useNotifications = (userId: string, unreadOnly: boolean = false) => {
+  return useQuery({
+    queryKey: ["notifications", userId, unreadOnly],
+    queryFn: () => api.fetchNotifications(userId, unreadOnly),
+    enabled: !!userId,
+  });
+};
+
+export const useMarkNotificationRead = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: api.markNotificationAsRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+};
+
+export const useMarkAllNotificationsRead = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: api.markAllNotificationsAsRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+};
+
+export const useEligibilityChecks = (userId?: string) => {
+  return useQuery({
+    queryKey: ["eligibility-checks", userId],
+    queryFn: () => api.fetchEligibilityChecks(userId),
+  });
+};
+
+export const useSaveEligibilityCheck = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: api.saveEligibilityCheck,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["eligibility-checks"] });
+    },
+  });
+};

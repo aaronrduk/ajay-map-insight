@@ -381,3 +381,226 @@ export const getUniqueComponents = async () => {
   if (error) throw error;
   return [...new Set(data.map((item) => item.component))];
 };
+
+export interface AgencyProposal {
+  id: string;
+  user_id: string;
+  title: string;
+  category: string;
+  description: string;
+  document_url?: string;
+  status: string;
+  admin_reply?: string;
+  admin_user_id?: string;
+  reviewed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CourseRegistrationNew {
+  id: string;
+  user_id: string;
+  full_name: string;
+  course_id: string;
+  college_id: string;
+  reason: string;
+  status: string;
+  admin_comment?: string;
+  admin_user_id?: string;
+  reviewed_at?: string;
+  created_at: string;
+  updated_at: string;
+  documents?: any[];
+  preferred_batch?: string;
+  additional_info?: string;
+  source?: string;
+  agency_id?: string;
+}
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string;
+  link?: string;
+  read: boolean;
+  type: string;
+  category: string;
+  priority: string;
+  created_at: string;
+  metadata?: any;
+}
+
+export const fetchAgencyProposals = async (userId?: string, status?: string) => {
+  let query = supabase
+    .from("agency_proposals")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (userId) query = query.eq("user_id", userId);
+  if (status) query = query.eq("status", status);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data as AgencyProposal[];
+};
+
+export const submitAgencyProposal = async (proposal: Omit<AgencyProposal, "id" | "created_at" | "updated_at">) => {
+  const { data, error } = await supabase
+    .from("agency_proposals")
+    .insert([{ ...proposal, status: "pending" }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const updateAgencyProposalStatus = async (
+  id: string,
+  status: string,
+  adminReply?: string,
+  adminUserId?: string
+) => {
+  const { data, error } = await supabase
+    .from("agency_proposals")
+    .update({
+      status,
+      admin_reply: adminReply,
+      admin_user_id: adminUserId,
+      reviewed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const fetchCourseRegistrationsNew = async (userId?: string, status?: string) => {
+  let query = supabase
+    .from("course_registrations_new")
+    .select(`
+      *,
+      courses(course_name, component, duration),
+      colleges(name, state, district)
+    `)
+    .order("created_at", { ascending: false });
+
+  if (userId) query = query.eq("user_id", userId);
+  if (status) query = query.eq("status", status);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+};
+
+export const submitCourseRegistrationNew = async (
+  registration: Omit<CourseRegistrationNew, "id" | "created_at" | "updated_at" | "status">
+) => {
+  const { data, error } = await supabase
+    .from("course_registrations_new")
+    .insert([{ ...registration, status: "pending" }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const updateCourseRegistrationStatus = async (
+  id: string,
+  status: string,
+  adminComment?: string,
+  adminUserId?: string
+) => {
+  const { data, error } = await supabase
+    .from("course_registrations_new")
+    .update({
+      status,
+      admin_comment: adminComment,
+      admin_user_id: adminUserId,
+      reviewed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const fetchNotifications = async (userId: string, unreadOnly: boolean = false) => {
+  let query = supabase
+    .from("notifications")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (unreadOnly) query = query.eq("read", false);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data as Notification[];
+};
+
+export const markNotificationAsRead = async (id: string) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .update({ read: true })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const markAllNotificationsAsRead = async (userId: string) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .update({ read: true })
+    .eq("user_id", userId)
+    .eq("read", false);
+
+  if (error) throw error;
+  return data;
+};
+
+export const createNotification = async (notification: Omit<Notification, "id" | "created_at">) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .insert([notification])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const fetchEligibilityChecks = async (userId?: string) => {
+  let query = supabase
+    .from("eligibility_checks")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (userId) query = query.eq("user_id", userId);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+};
+
+export const saveEligibilityCheck = async (check: any) => {
+  const { data, error } = await supabase
+    .from("eligibility_checks")
+    .insert([check])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
