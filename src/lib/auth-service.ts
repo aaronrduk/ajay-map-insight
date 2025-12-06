@@ -130,12 +130,17 @@ export const verifyRegistrationOTP = async (
   otp: string
 ): Promise<LoginResponse> => {
   try {
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanOtp = otp.trim();
+
+    console.log('Verifying OTP:', { email: cleanEmail, otp: cleanOtp, type: 'registration' });
+
     // Find valid OTP
     const { data: otpData, error: otpError } = await supabase
       .from('otp_store')
       .select('*')
-      .eq('email', email.toLowerCase())
-      .eq('otp', otp)
+      .eq('email', cleanEmail)
+      .eq('otp', cleanOtp)
       .eq('otp_type', 'registration')
       .eq('is_used', false)
       .gte('expires_at', new Date().toISOString())
@@ -143,10 +148,46 @@ export const verifyRegistrationOTP = async (
       .limit(1)
       .maybeSingle();
 
-    if (otpError || !otpData) {
+    console.log('OTP query result:', { found: !!otpData, error: otpError });
+
+    if (otpError) {
+      console.error('OTP query error:', otpError);
       return {
         success: false,
-        message: 'Invalid or expired OTP. Please try again.',
+        message: 'Database error. Please try again.',
+      };
+    }
+
+    if (!otpData) {
+      // Check if OTP exists but is expired or used
+      const { data: expiredOtp } = await supabase
+        .from('otp_store')
+        .select('*')
+        .eq('email', cleanEmail)
+        .eq('otp', cleanOtp)
+        .eq('otp_type', 'registration')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (expiredOtp) {
+        if (expiredOtp.is_used) {
+          return {
+            success: false,
+            message: 'This OTP has already been used. Please request a new one.',
+          };
+        }
+        if (new Date(expiredOtp.expires_at) < new Date()) {
+          return {
+            success: false,
+            message: 'OTP has expired. Please request a new one.',
+          };
+        }
+      }
+
+      return {
+        success: false,
+        message: 'Invalid OTP. Please check and try again.',
       };
     }
 
@@ -291,12 +332,17 @@ export const verifyLoginOTP = async (
   otp: string
 ): Promise<LoginResponse> => {
   try {
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanOtp = otp.trim();
+
+    console.log('Verifying login OTP:', { email: cleanEmail, otp: cleanOtp, type: 'login' });
+
     // Find valid OTP
     const { data: otpData, error: otpError } = await supabase
       .from('otp_store')
       .select('*')
-      .eq('email', email.toLowerCase())
-      .eq('otp', otp)
+      .eq('email', cleanEmail)
+      .eq('otp', cleanOtp)
       .eq('otp_type', 'login')
       .eq('is_used', false)
       .gte('expires_at', new Date().toISOString())
@@ -304,10 +350,46 @@ export const verifyLoginOTP = async (
       .limit(1)
       .maybeSingle();
 
-    if (otpError || !otpData) {
+    console.log('Login OTP query result:', { found: !!otpData, error: otpError });
+
+    if (otpError) {
+      console.error('OTP query error:', otpError);
       return {
         success: false,
-        message: 'Invalid or expired OTP. Please try again.',
+        message: 'Database error. Please try again.',
+      };
+    }
+
+    if (!otpData) {
+      // Check if OTP exists but is expired or used
+      const { data: expiredOtp } = await supabase
+        .from('otp_store')
+        .select('*')
+        .eq('email', cleanEmail)
+        .eq('otp', cleanOtp)
+        .eq('otp_type', 'login')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (expiredOtp) {
+        if (expiredOtp.is_used) {
+          return {
+            success: false,
+            message: 'This OTP has already been used. Please request a new one.',
+          };
+        }
+        if (new Date(expiredOtp.expires_at) < new Date()) {
+          return {
+            success: false,
+            message: 'OTP has expired. Please request a new one.',
+          };
+        }
+      }
+
+      return {
+        success: false,
+        message: 'Invalid OTP. Please check and try again.',
       };
     }
 
@@ -315,7 +397,7 @@ export const verifyLoginOTP = async (
     const { data: user, error: userError } = await supabase
       .from('portal_users')
       .select('*')
-      .eq('email', email.toLowerCase())
+      .eq('email', cleanEmail)
       .single();
 
     if (userError || !user) {
