@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { ThemeProvider } from "next-themes";
 import App from "./App.tsx";
 import "./index.css";
+import "./lib/auth-debug"; // Load debug utilities
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
